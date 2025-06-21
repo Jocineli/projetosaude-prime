@@ -1,0 +1,381 @@
+<!DOCTYPE html> 
+<html lang="pt-BR"> 
+<head> 
+    <meta charset="UTF-8"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+    <title>Telemedicina - Saúde Prime</title> 
+    <link rel="stylesheet" href="css/style.css"> 
+    <link rel="stylesheet" href="css/components.css"> 
+    <link rel="stylesheet" href="css/responsive.css"> 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"> 
+     
+    <style> 
+        /* Estilos adicionais ou ajustes para a mensagem, se necessário */ 
+        #mensagem-teleconsulta-status { 
+            background-color: #e0f7fa; /* Um azul bem claro para o fundo da mensagem */ 
+            border: 1px solid #007bff; /* Borda azul */ 
+            padding: 10px; 
+            border-radius: 5px; 
+            font-size: 1.1em; 
+            text-align: center; 
+        } 
+
+        /* --- Estilos do HEADER (copiados e adaptados das outras telas) --- */ 
+        .main-header { 
+            display: flex; /* Transforma o header em flexbox */ 
+            justify-content: space-between; /* Espaça logo e o grupo da direita */ 
+            align-items: center; /* Alinha verticalmente */ 
+            padding: 10px 20px; /* Padding nas laterais do header */ 
+            background-color: #05447f; /* Seu tom de azul */ 
+            color: white; 
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); 
+            position: relative; /* Essencial para o posicionamento do dropdown */ 
+            flex-wrap: wrap; /* Permite que os itens quebrem para a próxima linha em telas pequenas */ 
+        } 
+
+        .logo { 
+            font-size: 1.8em; /* Aumentei um pouco para ter mais destaque */
+            font-weight: bold; 
+            color: white; /* Garante que o logo seja branco */ 
+            text-decoration: none; /* Remove sublinhado */ 
+            flex-shrink: 0; /* Impede que o logo encolha */
+        } 
+
+        /* Novo container para agrupar o menu hamburguer e o perfil */
+        .header-right-group {
+            display: flex;
+            align-items: center;
+            gap: 15px; /* Espaço entre o hamburguer e o perfil */
+            flex-shrink: 0; /* Impede que o grupo encolha */
+        }
+
+        .main-nav { 
+            /* Não precisamos de flex-grow: 1 aqui, pois queremos que ocupe o mínimo espaço */
+            display: flex; /* Para centralizar o item do menu hamburguer */ 
+            justify-content: center; 
+        } 
+
+        .main-nav ul { 
+            display: flex; 
+            align-items: center; 
+            list-style: none; 
+            margin: 0; 
+            padding: 0; 
+        } 
+
+        .main-nav ul li { 
+            margin: 0; /* Remove margem, o gap do parent já dá o espaçamento */
+        } 
+
+        .main-nav ul li a { 
+            color: white; 
+            text-decoration: none; 
+            padding: 10px; /* Adicionado padding para o clique no hamburguer */
+            transition: color 0.3s ease; 
+            font-size: 1.8em; /* Tamanho do ícone hamburguer */
+        } 
+
+        .main-nav ul li a:hover { 
+            color: #d0e0ff; /* Um tom mais claro de azul no hover */ 
+        } 
+
+        /* --- Estilos para o Menu de Perfil (Dropdown e Saudação) --- */ 
+        .user-profile-wrapper { /* Wrapper para agrupar saudação e dropdown */ 
+            display: flex; 
+            align-items: center; /* Alinha texto e ícone verticalmente */ 
+            gap: 10px; /* Espaço entre o texto "Olá, [Nome]" e o ícone de perfil */ 
+            flex-shrink: 0; /* Impede que o texto ou o ícone do perfil encolham */
+        } 
+
+        .welcome-message { 
+            color: white; 
+            font-size: 1em; 
+            font-weight: normal; 
+            white-space: nowrap; /* Impede que o texto quebre linha */ 
+        } 
+
+        .user-profile-dropdown { 
+            position: relative; /* Para posicionar o dropdown-content */ 
+            display: inline-block; 
+            cursor: pointer; 
+            z-index: 1000; /* Garante que o menu fique acima de outros elementos */ 
+        } 
+
+        .user-profile-dropdown .profile-icon { 
+            font-size: 2.2em; /* Tamanho do ícone de usuário */ 
+            color: white; 
+            transition: color 0.2s ease; 
+        } 
+
+        .user-profile-dropdown:hover .profile-icon, 
+        .user-profile-dropdown.active .profile-icon { /* Adicionado .active para estado clicado */ 
+            color: #d0e0ff; /* Cor mais clara no hover/ativo */ 
+        } 
+
+        .dropdown-content { 
+            display: none; /* Escondido por padrão */ 
+            position: absolute; 
+            background-color: white; 
+            min-width: 180px; /* Largura mínima do dropdown */ 
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2); 
+            z-index: 1; 
+            right: 0; /* Alinha à direita do ícone */ 
+            top: calc(100% + 10px); /* Posição abaixo do ícone, com um pequeno espaço */ 
+            border-radius: 5px; 
+            overflow: hidden; /* Para cantos arredondados dos itens */ 
+        } 
+         
+        /* O dropdown será visível apenas quando a classe 'show' for adicionada */ 
+        .user-profile-dropdown.show .dropdown-content { 
+            display: block; 
+        } 
+
+        .dropdown-content a { 
+            color: #333; /* Cor escura para que o texto esteja sempre visível e não "apagado" */ 
+            padding: 12px 16px; 
+            text-decoration: none; 
+            display: flex; /* Para alinhar ícone e texto */ 
+            align-items: center; 
+            text-align: left; 
+            font-weight: normal; 
+            font-size: 0.95em; 
+            transition: background-color 0.2s ease, color 0.2s ease; 
+        } 
+
+        .dropdown-content a:hover { 
+            background-color: #f1f1f1; 
+            color: #05447f; /* Cor mais escura no hover */ 
+        } 
+         
+        .dropdown-content a i { 
+            margin-right: 8px; /* Espaço entre ícone e texto no dropdown */ 
+            color: #05447f; /* Cor padrão dos ícones do dropdown */ 
+        } 
+
+        .dropdown-content a.logout-item { 
+            color: #dc3545; /* Vermelho para o item de sair */ 
+        } 
+         
+        .dropdown-content a.logout-item i { 
+            color: #dc3545; /* Vermelho para o ícone de sair */ 
+        } 
+        /* FIM dos Estilos para o Menu de Perfil */ 
+
+        /* Responsive adjustments for main-header */ 
+        @media (max-width: 768px) { 
+            .main-header { 
+                flex-direction: column; /* Empilha os itens verticalmente */ 
+                align-items: center; /* Centraliza itens em telas menores */
+                padding-bottom: 10px; /* Reduz o padding inferior */
+            } 
+            .logo { 
+                width: 100%; /* Ocupa a largura total para melhor centralização */ 
+                text-align: center; /* Centraliza o texto do logo */ 
+                margin-bottom: 10px; /* Adiciona um pouco de espaço abaixo do logo */ 
+                order: 1; /* Garante que a logo venha primeiro */ 
+            } 
+            .header-right-group { /* Agrupa hamburguer e perfil */
+                width: 100%; /* Ocupa toda a largura */
+                justify-content: center; /* Centraliza o grupo */
+                margin-top: 10px; /* Espaço entre logo e o grupo */
+                order: 2; /* Posiciona abaixo da logo */
+            }
+            .main-nav { 
+                /* Não precisa de width: 100% aqui, pois está dentro de um flex container */
+                order: 1; /* Hamburguer primeiro dentro do grupo */
+                margin: 0; /* Garante que não haja margem extra */
+            } 
+            .main-nav ul { 
+                /* Mantém display flex para o ☰ */
+                flex-wrap: nowrap; /* Impede que o ☰ quebre linha se for o único */
+            } 
+            .main-nav ul li a {
+                font-size: 1.5em; /* Ajuste o tamanho do hamburguer para mobile se necessário */
+                padding: 8px 12px; /* Ajuste o padding para o hamburguer em mobile */
+            }
+            .user-profile-wrapper { /* Agrupa saudação e ícone */ 
+                /* Não precisa de width: 100% aqui */
+                margin-top: 0; /* Remove margem superior desnecessária para alinhamento */
+                order: 2; /* Perfil depois do hamburguer dentro do grupo */
+            } 
+            .user-profile-dropdown .dropdown-content { 
+                right: auto; /* Reseta o alinhamento à direita */ 
+                left: 50%; /* Tenta centralizar */ 
+                transform: translateX(-50%); /* Ajuste fino para centralizar */ 
+            } 
+        } 
+        /* --- FIM dos Estilos do HEADER --- */ 
+    </style> 
+</head> 
+<body> 
+    <header class="main-header"> 
+        <a href="menu_principal.html" class="logo">Saúde Prime</a>  
+         
+        <div class="header-right-group">
+            <nav class="main-nav"> 
+                <ul> 
+                    <li><a href="menu_principal.html">☰</a></li> 
+                </ul> 
+            </nav> 
+             
+            <div class="user-profile-wrapper"> 
+                <span class="welcome-message" id="welcomeUserMessage"></span> 
+                 
+                <div class="user-profile-dropdown" id="profileDropdown"> 
+                    <i class="fas fa-user-circle profile-icon"></i> 
+                    <div class="dropdown-content"> 
+                        <a href="esqueceu_senha.html"><i class="fas fa-key"></i> Redefinir Senha</a> 
+                        <a href="#" class="logout-item" id="logoutDropdownBtn"><i class="fas fa-sign-out-alt"></i> Sair</a> 
+                    </div> 
+                </div> 
+            </div> 
+        </div>
+    </header> 
+
+    <div class="main-content container"> 
+        <aside class="sidebar"> 
+            <nav> 
+                <ul> 
+                    <li><a href="telemedicina.html" class="active">Iniciar Teleconsulta</a></li> 
+                    <li><a href="agendamento.html">Agendar Teleconsulta</a></li> 
+                </ul> 
+            </nav> 
+        </aside> 
+
+        <main class="content-area"> 
+            <h2>Telemedicina</h2> 
+
+            <section class="card"> 
+                <div class="card-header">Iniciar Nova Teleconsulta</div> 
+                <div class="card-body"> 
+                    <p>Para iniciar uma teleconsulta, selecione o paciente e o profissional envolvidos.</p> 
+                     
+                    <form id="teleconsultaForm">  
+                        <div class="form-group"> 
+                            <label for="usuarioTeleconsulta">Paciente:</label> 
+                            <select id="usuarioTeleconsulta" name="usuarioTeleconsulta" required> 
+                                <option value="">Selecione um paciente</option> 
+                                <option value="Maria.Clara.Souza">Maria Clara Souza</option> 
+                                <option value="João.Pedro.Almeida">João Pedro Almeida</option> 
+                                <option value="Fernanda.Lima">Fernanda Lima</option> 
+                            </select> 
+                        </div> 
+                        <div class="form-group"> 
+                            <label for="medicoTeleconsulta">Médico/Profissional:</label> 
+                            <select id="medicoTeleconsulta" name="medicoTeleconsulta" required> 
+                                <option value="">Selecione um profissional</option> 
+                                <option value="Dr.Matheus.Silva">Dr. Matheus Silva</option> 
+                                <option value="Dr.Jose.Silva">Dr. Jose Silva</option> 
+                                <option value="Dr.Maria.Santos">Dr. Maria Santos</option> 
+                                <option value="Dr.Pedro.Souza">Dr. Pedro Souza</option> 
+                                <option value="Dr.Flavia.Santos">Dr. Flavia Santos</option> 
+                                <option value="Dr.Maria.Souza">Dr. Maria Souza</option> 
+                                <option value="Dr.João.da.Silva">Dr. João da Silva</option> 
+                                <option value="Dr.Carlos.Silva">Dr. Carlos Silva</option> 
+                            </select> 
+                        </div> 
+                        <button type="button" id="iniciarVideochamadaBtn" class="btn primary">Iniciar Videochamada</button> 
+                    </form> 
+                     
+                    <p id="mensagem-teleconsulta-status" style="display: none; color: #007bff; margin-top: 20px; font-weight: bold;"> 
+                        Conectando... 📞 Iniciando teleconsulta! 
+                    </p> 
+                     
+                    <p class="small-text" style="margin-top: 20px; color: #666;"> 
+                        **Nota:** Nesta simulação, o botão "Iniciar Videochamada" limpa as seleções e exibe uma mensagem de status. Em um sistema real, ele integraria com uma plataforma de videochamada segura e iniciaria a sessão. 
+                    </p> 
+                </div> 
+            </section> 
+
+            <hr> 
+
+            <h2>Histórico de Teleconsultas</h2> 
+            <div id="teleconsultasList"> 
+                <p>Nenhuma teleconsulta registrada ainda.</p> 
+            </div> 
+        </main> 
+    </div> 
+
+    <footer class="main-footer"> 
+        <div class="container"> 
+            <p>&copy; 2025 Saúde Prime. Todos os direitos reservados.</p> 
+        </div> 
+    </footer> 
+
+    <script src="js/main.js"></script> 
+    <script src="js/telemedicina.js"></script> 
+     
+    <script> 
+        document.addEventListener('DOMContentLoaded', function() { 
+            // Lógica para puxar o nome do usuário do sessionStorage 
+            const welcomeMessageElement = document.getElementById('welcomeUserMessage'); 
+            const loggedInUserName = sessionStorage.getItem('loggedInUserName'); // Puxa o nome salvo na tela de login 
+
+            if (welcomeMessageElement && loggedInUserName) { 
+                welcomeMessageElement.textContent = `Olá, ${loggedInUserName}`; 
+            } else if (welcomeMessageElement) { 
+                welcomeMessageElement.textContent = 'Olá, Usuário'; 
+            } 
+
+            // Lógica para o dropdown de perfil (CLIQUE para abrir/fechar) 
+            const profileDropdown = document.getElementById('profileDropdown'); 
+            if (profileDropdown) {  
+                profileDropdown.addEventListener('click', function(event) { 
+                    event.stopPropagation();  
+                    this.classList.toggle('show');  
+                }); 
+            } 
+
+            // Fecha o dropdown se clicar fora dele 
+            document.addEventListener('click', function(event) { 
+                if (profileDropdown && !profileDropdown.contains(event.target)) { 
+                    profileDropdown.classList.remove('show'); 
+                } 
+            }); 
+
+            // Lógica para o botão "Sair" dentro do dropdown 
+            const logoutDropdownBtn = document.getElementById('logoutDropdownBtn'); 
+            if (logoutDropdownBtn) { 
+                logoutDropdownBtn.addEventListener('click', function(event) { 
+                    event.preventDefault();  
+
+                    const confirmLogout = confirm("Tem certeza que deseja sair?"); 
+                    if (confirmLogout) { 
+                        sessionStorage.removeItem('loggedInUserName');  
+                        alert("Sessão encerrada com sucesso!"); 
+                        window.location.href = 'login.html';  
+                    } 
+                }); 
+            } 
+
+            // Lógica existente para iniciar videochamada 
+            const iniciarVideochamadaBtn = document.getElementById('iniciarVideochamadaBtn'); 
+            const selectUsuarioTeleconsulta = document.getElementById('usuarioTeleconsulta'); 
+            const selectMedicoTeleconsulta = document.getElementById('medicoTeleconsulta'); 
+            const mensagemTeleconsultaStatus = document.getElementById('mensagem-teleconsulta-status'); 
+             
+            if (iniciarVideochamadaBtn) { 
+                iniciarVideochamadaBtn.addEventListener('click', function() { 
+                    if (selectUsuarioTeleconsulta.value === "" || selectMedicoTeleconsulta.value === "") { 
+                        alert("Por favor, selecione um paciente e um profissional para iniciar a videochamada."); 
+                        return; 
+                    } 
+
+                    mensagemTeleconsultaStatus.style.display = 'block'; 
+                    const pacienteSelecionado = selectUsuarioTeleconsulta.options[selectUsuarioTeleconsulta.selectedIndex].text; 
+                    const medicoSelecionado = selectMedicoTeleconsulta.options[selectMedicoTeleconsulta.selectedIndex].text; 
+
+                    console.log(`Iniciando teleconsulta entre ${pacienteSelecionado} e ${medicoSelecionado}...`); 
+
+                    setTimeout(() => { 
+                        selectUsuarioTeleconsulta.value = "";  
+                        selectMedicoTeleconsulta.value = "";  
+                        mensagemTeleconsultaStatus.style.display = 'none';  
+                        alert(`Teleconsulta iniciada com sucesso entre ${pacienteSelecionado} e ${medicoSelecionado}!`); 
+                    }, 3000); 
+                }); 
+            } 
+        }); 
+    </script> 
+</body> 
+</html>

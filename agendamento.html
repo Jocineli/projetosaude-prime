@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Agendamento - Sistema Hospitalar</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/components.css" />
+    <link rel="stylesheet" href="css/responsive.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* --- Estilos do HEADER (copiados e adaptados das outras telas) --- */
+        .main-header {
+            display: flex; /* Transforma o header em flexbox */
+            justify-content: space-between; /* Espaça os 3 blocos: logo, nav, perfil */
+            align-items: center; /* Alinha verticalmente */
+            padding: 10px 20px; /* Padding nas laterais do header */
+            background-color: #05447f; /* Seu tom de azul */
+            color: white;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            position: relative; /* Essencial para o posicionamento do dropdown */
+            flex-wrap: wrap; /* Permite que os itens quebrem para a próxima linha em telas pequenas */
+        }
+
+        .logo {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: white; /* Garante que o logo seja branco */
+            text-decoration: none; /* Remove sublinhado */
+            display: flex; /* Para alinhar a imagem da logo e o texto */
+            align-items: center;
+            gap: 8px; /* Espaço entre a imagem e o texto do logo */
+        }
+
+        .logo img {
+            height: 40px; /* Tamanho da sua imagem de logo */
+            width: auto;
+            vertical-align: middle; /* Alinha a imagem verticalmente com o texto */
+        }
+
+        .main-nav {
+            flex-grow: 1; /* Permite que a nav ocupe o espaço disponível entre a logo e o perfil */
+            display: flex;
+            justify-content: center; /* Centraliza a navegação no espaço que ela ocupa */
+        }
+
+        .main-nav ul {
+            display: flex;
+            align-items: center;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .main-nav ul li {
+            margin: 0 15px; /* Espaçamento entre os itens do menu */
+        }
+
+        .main-nav ul li a {
+            color: white;
+            text-decoration: none;
+            padding: 10px 0;
+            transition: color 0.3s ease;
+        }
+
+        .main-nav ul li a:hover {
+            color: #d0e0ff; /* Um tom mais claro de azul no hover */
+        }
+
+        /* --- Estilos para o Menu de Perfil (Dropdown e Saudação) --- */
+        .user-profile-wrapper { /* Wrapper para agrupar saudação e dropdown */
+            display: flex;
+            align-items: center; /* Alinha texto e ícone verticalmente */
+            gap: 10px; /* Espaço entre o texto "Olá, [Nome]" e o ícone de perfil */
+        }
+
+        .welcome-message {
+            color: white;
+            font-size: 1em;
+            font-weight: normal;
+            white-space: nowrap; /* Impede que o texto quebre linha */
+        }
+
+        .user-profile-dropdown {
+            position: relative; /* Para posicionar o dropdown-content */
+            display: inline-block;
+            cursor: pointer;
+            z-index: 1000; /* Garante que o menu fique acima de outros elementos */
+        }
+
+        .user-profile-dropdown .profile-icon {
+            font-size: 2.2em; /* Tamanho do ícone de usuário */
+            color: white;
+            transition: color 0.2s ease;
+        }
+
+        .user-profile-dropdown:hover .profile-icon,
+        .user-profile-dropdown.active .profile-icon { /* Adicionado .active para estado clicado */
+            color: #d0e0ff; /* Cor mais clara no hover/ativo */
+        }
+
+        .dropdown-content {
+            display: none; /* Escondido por padrão */
+            position: absolute;
+            background-color: white;
+            min-width: 180px; /* Largura mínima do dropdown */
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+            right: 0; /* Alinha à direita do ícone */
+            top: calc(100% + 10px); /* Posição abaixo do ícone, com um pequeno espaço */
+            border-radius: 5px;
+            overflow: hidden; /* Para cantos arredondados dos itens */
+        }
+        
+        /* O dropdown será visível apenas quando a classe 'show' for adicionada */
+        .user-profile-dropdown.show .dropdown-content {
+            display: block;
+        }
+
+        .dropdown-content a {
+            color: #333; /* Cor escura para que o texto esteja sempre visível e não "apagado" */
+            padding: 12px 16px;
+            text-decoration: none;
+            display: flex; /* Para alinhar ícone e texto */
+            align-items: center;
+            text-align: left;
+            font-weight: normal;
+            font-size: 0.95em;
+            transition: background-color 0.2s ease, color 0.2s ease;
+        }
+
+        .dropdown-content a:hover {
+            background-color: #f1f1f1;
+            color: #05447f; /* Cor mais escura no hover */
+        }
+        
+        .dropdown-content a i {
+            margin-right: 8px; /* Espaço entre ícone e texto no dropdown */
+            color: #05447f; /* Cor padrão dos ícones do dropdown */
+        }
+
+        .dropdown-content a.logout-item {
+            color: #dc3545; /* Vermelho para o item de sair */
+        }
+        
+        .dropdown-content a.logout-item i {
+            color: #dc3545; /* Vermelho para o ícone de sair */
+        }
+        /* FIM dos Estilos para o Menu de Perfil */
+
+        /* Oculta o antigo botão de sair (se existia antes no seu main-nav) */
+        .main-nav #logoutBtn { /* Use o ID para ser mais específico se necessário */
+            display: none !important; 
+        }
+
+        /* Responsive adjustments for main-header */
+        @media (max-width: 768px) {
+            .main-header {
+                justify-content: center; /* Centraliza itens em telas menores */
+                padding-bottom: 20px; 
+            }
+            .logo {
+                width: 100%; /* Ocupa a largura total para melhor centralização */
+                text-align: center; /* Centraliza o texto do logo */
+                padding-bottom: 10px; /* Adiciona um pouco de espaço abaixo do logo */
+                order: 1; /* Garante que a logo venha primeiro */
+            }
+            .main-nav {
+                width: 100%; /* Ocupa a largura total para os links de navegação */
+                order: 2; /* Faz a nav aparecer abaixo da logo */
+                justify-content: center; /* Centraliza os links de navegação */
+                margin-top: 10px; /* Espaço entre logo e nav */
+            }
+            .main-nav ul {
+                flex-wrap: wrap; /* Permite que os links da nav quebrem se necessário */
+                justify-content: center;
+            }
+            .main-nav ul li {
+                margin: 5px 10px; /* Reduz espaçamento em telas pequenas */
+            }
+            .user-profile-wrapper { /* Agrupa saudação e ícone */
+                width: 100%; /* Ocupa toda a largura em telas pequenas */
+                justify-content: center; /* Centraliza o grupo */
+                order: 3; /* Posiciona abaixo da navegação */
+                margin-top: 10px; /* Espaço entre nav e o wrapper de perfil */
+            }
+            .user-profile-dropdown .dropdown-content {
+                right: auto; /* Reseta o alinhamento à direita */
+                left: 50%; /* Tenta centralizar */
+                transform: translateX(-50%); /* Ajuste fino para centralizar */
+            }
+        }
+        /* --- FIM dos Estilos do HEADER --- */
+
+        /* Estilos específicos para a página de Agendamento (mantidos/ajustados) */
+        .main-content {
+            display: flex;
+            gap: 20px;
+            padding: 20px; /* Adiciona padding ao main-content para que o container funcione */
+        }
+
+        .sidebar {
+            flex: 0 0 220px;
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .sidebar nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sidebar nav ul li {
+            margin-bottom: 10px;
+        }
+
+        .sidebar nav ul li a {
+            display: block;
+            padding: 10px 15px;
+            text-decoration: none;
+            color: #333;
+            border-radius: 5px;
+            transition: background-color 0.2s ease, color 0.2s ease;
+        }
+
+        .sidebar nav ul li a:hover,
+        .sidebar nav ul li a.active {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .content-area {
+            flex-grow: 1;
+        }
+
+        /* Styles for form groups */
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .form-group input[type="date"],
+        .form-group input[type="time"],
+        .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1em;
+            box-sizing: border-box; /* Ensures padding doesn't increase total width */
+        }
+
+        .btn.primary {
+            background-color: #007bff;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.1em;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn.primary:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <header class="main-header">
+        <a href="menu_principal.html" class="logo">
+            Saúde Prime
+        </a>
+        
+        <nav class="main-nav">
+            <ul>
+                <li><a href="pacientes.html">Pacientes</a></li>
+                <li><a href="lista_agendamentos.html">Agendamentos</a></li> <li><a href="profissionais.html">Profissionais</a></li>
+                <li><a href="menu_principal.html">☰</a></li> </ul>
+        </nav>
+        
+        <div class="user-profile-wrapper">
+            <span class="welcome-message" id="welcomeUserMessage"></span>
+            
+            <div class="user-profile-dropdown" id="profileDropdown">
+                <i class="fas fa-user-circle profile-icon"></i>
+                <div class="dropdown-content">
+                    <a href="esqueceu_senha.html"><i class="fas fa-key"></i> Redefinir Senha</a>
+                    <a href="#" class="logout-item" id="logoutDropdownBtn"><i class="fas fa-sign-out-alt"></i> Sair</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="main-content container">
+        <aside class="sidebar">
+            <nav>
+                <ul>
+                    <li><a href="agendamento.html" class="active">Novo Agendamento</a></li>
+                    <li><a href="Agendamentos_pendente.html">Listar Agendamentos</a></li>
+                    <li><a href="historico_agendamento.html">Histórico de Agendamentos</a></li>
+               </ul>
+            </nav>
+        </aside>
+
+        <main class="content-area">
+            <h2>Agendamento de Consulta</h2>
+
+            <form id="appointmentForm" onsubmit="return agendarConsulta(event)">
+                <div class="form-group">
+                    <label for="usuario">Paciente:</label>
+                    <select id="usuario" name="usuario" required>
+                        <option value="">Selecione um paciente</option>
+                        <option value="Maria.Clara.Souza">Maria Clara Souza</option>
+                        <option value="João.Pedro.Almeida">João Pedro Almeida</option>
+                        <option value="Fernanda.Lima">Fernanda Lima</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="medicoAgendamento">Médico/Profissional:</label>
+                    <select id="medicoAgendamento" name="medicoAgendamento" required>
+                        <option value="">Selecione um profissional</option>
+                        <option value="Dr.Matheus.Silva">Dr. Matheus Silva (Generalista)</option>
+                        <option value="Dr.Jose.Silva">Dr. Jose Silva (Pediatra)</option>
+                        <option value="Dr.Maria.Santos">Dr. Maria Santos (Dermatologista)</option>
+                        <option value="Dr.Pedro.Souza">Dr. Pedro Souza (Ortopedista)</option>
+                        <option value="Dr.Flavia.Santos">Dr. Flavia Santos (Oftalmologista)</option>
+                        <option value="Dr.Maria.Souza">Dr. Maria Souza (Nutricionista)</option>
+                        <option value="Dr.João.da.Silva">Dr. João da Silva (Fisioterapeuta)</option>
+                        <option value="Dr.Carlos.Silva">Dr. Carlos Silva (Cardiologista)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="dataConsulta">Data:</label>
+                    <input type="date" id="dataConsulta" name="dataConsulta" required />
+                </div>
+
+                <div class="form-group">
+                    <label for="horaConsulta">Hora:</label>
+                    <input type="time" id="horaConsulta" name="horaConsulta" required />
+                </div>
+
+                <div class="form-group">
+                    <label for="tipoConsulta">Tipo de Agendamento:</label> <select id="tipoConsulta" name="tipoConsulta" required>
+                        <option value="">Selecione o tipo</option>
+                        <option value="Consulta Presencial">Consulta Presencial</option>
+                        <option value="Teleconsulta">Teleconsulta</option>
+                        <option value="Exame">Exame</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn primary">Agendar</button>
+            </form>
+
+            <p id="mensagem-sucesso" style="display: none; color: rgb(3, 75, 120); margin-top: 20px;">
+                ✅ Agendamento realizado com sucesso!
+            </p>
+        </main>
+    </div>
+    <footer class="main-footer">
+        <div class="container">
+            <p>&copy; 2025 Sistema de Gestão Hospitalar. Todos os direitos reservados.</p>
+        </div>
+    </footer>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Lógica para puxar o nome do usuário do sessionStorage
+            const welcomeMessageElement = document.getElementById('welcomeUserMessage');
+            const loggedInUserName = sessionStorage.getItem('loggedInUserName'); // Puxa o nome salvo na tela de login
+
+            if (welcomeMessageElement && loggedInUserName) {
+                welcomeMessageElement.textContent = `Olá, ${loggedInUserName}`;
+            } else if (welcomeMessageElement) {
+                welcomeMessageElement.textContent = 'Olá, Usuário'; // Mensagem padrão se o nome não for encontrado
+            }
+
+            // Lógica para o dropdown de perfil (CLIQUE para abrir/fechar)
+            const profileDropdown = document.getElementById('profileDropdown');
+            if (profileDropdown) { 
+                profileDropdown.addEventListener('click', function(event) {
+                    event.stopPropagation(); // Impede que o clique se propague para o document e feche imediatamente
+                    this.classList.toggle('show'); // Alterna a classe 'show' para exibir/esconder
+                });
+            }
+
+            // Fecha o dropdown se clicar fora dele
+            document.addEventListener('click', function(event) {
+                if (profileDropdown && !profileDropdown.contains(event.target)) {
+                    profileDropdown.classList.remove('show');
+                }
+            });
+
+            // Lógica para o botão "Sair" dentro do dropdown
+            const logoutDropdownBtn = document.getElementById('logoutDropdownBtn');
+            if (logoutDropdownBtn) {
+                logoutDropdownBtn.addEventListener('click', function(event) {
+                    event.preventDefault(); // Previne o comportamento padrão do link
+
+                    const confirmLogout = confirm("Tem certeza que deseja sair?");
+                    if (confirmLogout) {
+                        sessionStorage.removeItem('loggedInUserName'); // Limpa o nome do usuário
+                        alert("Sessão encerrada com sucesso!");
+                        window.location.href = 'login.html'; // Redireciona para a tela de login
+                    }
+                });
+            }
+
+            // Lógica para o agendamento de consulta
+            window.agendarConsulta = function(event) { // Make it global for onsubmit
+                event.preventDefault();
+
+                // Em um sistema real, você coletaria os dados do formulário:
+                const paciente = document.getElementById('usuario').value;
+                const profissional = document.getElementById('medicoAgendamento').value;
+                const data = document.getElementById('dataConsulta').value;
+                const hora = document.getElementById('horaConsulta').value;
+                const tipo = document.getElementById('tipoConsulta').value;
+
+                console.log('Dados do Agendamento:', { paciente, profissional, data, hora, tipo });
+
+                // Aqui você enviaria esses dados para um backend (servidor)
+                // Usando fetch() ou XMLHttpRequest para salvar no banco de dados.
+                // Por exemplo:
+                /*
+                fetch('/api/agendamentos', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ paciente, profissional, data, hora, tipo }),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Sucesso:', data);
+                    const mensagem = document.getElementById('mensagem-sucesso');
+                    mensagem.textContent = '✅ Agendamento realizado com sucesso!';
+                    mensagem.style.display = 'block';
+                    document.getElementById('appointmentForm').reset();
+                    setTimeout(() => {
+                        mensagem.style.display = 'none';
+                    }, 4000);
+                })
+                .catch((error) => {
+                    console.error('Erro:', error);
+                    alert('Erro ao agendar consulta. Tente novamente.');
+                });
+                */
+
+                // Para demonstração, apenas exibe a mensagem de sucesso
+                const mensagem = document.getElementById('mensagem-sucesso');
+                mensagem.textContent = '✅ Agendamento realizado com sucesso!'; // Changed message slightly
+                mensagem.style.display = 'block';
+
+                // Limpa o formulário após 4 segundos
+                setTimeout(() => {
+                    document.getElementById('appointmentForm').reset();
+                    mensagem.style.display = 'none';
+                }, 4000);
+
+                return false; // Previne o envio padrão do formulário
+            };
+        });
+    </script>
+</body>
+</html>

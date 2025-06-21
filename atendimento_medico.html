@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Atendimento Médico - Saúde Prime</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* --- Estilos do HEADER (mantidos iguais) --- */
+        .main-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: #05447f;
+            color: white;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            position: relative;
+            flex-wrap: wrap;
+        }
+
+        .logo {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logo img {
+            height: 40px;
+            width: auto;
+            vertical-align: middle;
+        }
+
+        .main-nav {
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+        }
+
+        .main-nav ul {
+            display: flex;
+            align-items: center;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .main-nav ul li {
+            margin: 0 15px;
+        }
+
+        .main-nav ul li a {
+            color: white;
+            text-decoration: none;
+            padding: 10px 0;
+            transition: color 0.3s ease;
+        }
+
+        .main-nav ul li a:hover {
+            color: #d0e0ff;
+        }
+
+        .user-profile-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .welcome-message {
+            color: white;
+            font-size: 1em;
+            font-weight: normal;
+            white-space: nowrap;
+        }
+
+        .user-profile-dropdown {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+            z-index: 1000;
+        }
+
+        .user-profile-dropdown .profile-icon {
+            font-size: 2.2em;
+            color: white;
+            transition: color 0.2s ease;
+        }
+
+        .user-profile-dropdown:hover .profile-icon,
+        .user-profile-dropdown.active .profile-icon {
+            color: #d0e0ff;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: white;
+            min-width: 180px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+            right: 0;
+            top: calc(100% + 10px);
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        
+        .user-profile-dropdown.show .dropdown-content {
+            display: block;
+        }
+
+        .dropdown-content a {
+            color: #333;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            text-align: left;
+            font-weight: normal;
+            font-size: 0.95em;
+            transition: background-color 0.2s ease, color 0.2s ease;
+        }
+
+        .dropdown-content a:hover {
+            background-color: #f1f1f1;
+            color: #05447f;
+        }
+        
+        .dropdown-content a i {
+            margin-right: 8px;
+            color: #05447f;
+        }
+
+        .dropdown-content a.logout-item {
+            color: #dc3545;
+        }
+        
+        .dropdown-content a.logout-item i {
+            color: #dc3545;
+        }
+
+        .main-nav #logoutBtn {
+            display: none !important; 
+        }
+
+        @media (max-width: 768px) {
+            .main-header {
+                justify-content: center;
+                padding-bottom: 20px; 
+            }
+            .logo {
+                width: 100%;
+                text-align: center;
+                padding-bottom: 10px;
+                order: 1;
+            }
+            .main-nav {
+                width: 100%;
+                order: 2;
+                justify-content: center;
+                margin-top: 10px;
+            }
+            .main-nav ul {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            .main-nav ul li {
+                margin: 5px 10px;
+            }
+            .user-profile-wrapper {
+                width: 100%;
+                justify-content: center;
+                order: 3;
+                margin-top: 10px;
+            }
+            .user-profile-dropdown .dropdown-content {
+                right: auto;
+                left: 50%;
+                transform: translateX(-50%);
+            }
+        }
+        /* --- FIM dos Estilos do HEADER --- */
+
+        /* Estilos específicos para a página de Atendimento Médico */
+        .main-content {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .patient-info-card, .attendance-form {
+            background-color: #ffffff;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 25px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .patient-info-card {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            align-items: flex-start; /* Alinha os itens ao topo */
+            justify-content: space-between;
+        }
+
+        .patient-details {
+            flex-grow: 1;
+        }
+
+        .patient-details h3 {
+            color: #0056b3;
+            margin-top: 0;
+            margin-bottom: 10px;
+            font-size: 1.4em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .patient-details p {
+            margin-bottom: 5px;
+            color: #555;
+            line-height: 1.5;
+        }
+        
+        .patient-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: flex-end; /* Alinha os botões à direita */
+            min-width: 200px; /* Garante espaço para o texto do médico */
+        }
+
+        .doctor-info {
+            font-size: 0.9em;
+            color: #333;
+            text-align: right;
+            margin-bottom: 10px; /* Espaço entre as infos do médico e o botão */
+        }
+
+        .doctor-info p {
+            margin: 0;
+            line-height: 1.3;
+        }
+
+        .patient-actions .action-button {
+            padding: 8px 15px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background-color 0.3s ease;
+            width: fit-content; /* Ajusta a largura ao conteúdo */
+        }
+
+        .patient-actions .action-button:hover {
+            background-color: #0056b3;
+        }
+
+        .patient-actions .action-button.call-patient {
+            background-color: #28a745; /* Verde para chamar paciente */
+        }
+        .patient-actions .action-button.call-patient:hover {
+            background-color: #218838;
+        }
+        
+        /* Mensagem de paciente chamando */
+        #callingMessage {
+            margin-top: 10px;
+            padding: 8px 15px;
+            background-color: #ffc107; /* Amarelo de alerta */
+            color: #333;
+            border-radius: 5px;
+            display: none; /* Escondida por padrão */
+            font-weight: bold;
+            text-align: center;
+        }
+
+
+        .form-section {
+            margin-bottom: 20px;
+        }
+
+        .form-section label {
+            font-weight: bold;
+            margin-bottom: 8px;
+            display: block;
+            color: #333;
+        }
+
+        .form-section textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            min-height: 120px;
+            resize: vertical;
+            font-family: Arial, sans-serif; /* Para ter uma fonte mais legível em textareas */
+        }
+
+        .form-section .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-section input[type="text"],
+        .form-section input[type="number"],
+        .form-section input[type="date"],
+        .form-section input[type="time"],
+        .form-section select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box; /* Garante que padding e borda não aumentem o tamanho total */
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end; /* Alinha os botões à direita */
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .form-actions .btn {
+            padding: 12px 25px;
+            font-size: 1em;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            text-decoration: none; /* Para links que parecem botões */
+            display: inline-flex; /* Para alinhar ícone e texto */
+            align-items: center;
+            gap: 8px;
+        }
+
+        .form-actions .btn.primary {
+            background-color: #007bff;
+            color: white;
+            border: none;
+        }
+
+        .form-actions .btn.primary:hover {
+            background-color: #0056b3;
+        }
+
+        .form-actions .btn.danger {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+        }
+
+        .form-actions .btn.danger:hover {
+            background-color: #c82333;
+        }
+
+        /* Responsividade */
+        @media (max-width: 768px) {
+            .patient-info-card {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .patient-actions {
+                width: 100%;
+                align-items: center; /* Centraliza botões e info do médico em telas pequenas */
+                margin-top: 15px;
+            }
+            .doctor-info {
+                text-align: center; /* Centraliza o texto do médico em telas pequenas */
+                width: 100%;
+            }
+            .form-actions {
+                flex-direction: column;
+                align-items: center;
+            }
+            .form-actions .btn {
+                width: 100%;
+                max-width: 250px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="main-header">
+        <a href="menu_principal.html" class="logo">
+            Saúde Prime
+        </a>
+        
+        <nav class="main-nav">
+            <ul>
+                <li><a href="pacientes.html">Pacientes</a></li>
+                <li><a href="lista_agendamentos.html">Agendamentos</a></li>
+                <li><a href="telemedicina.html">Telemedicina</a></li>
+                <li><a href="menu_principal.html">☰</a></li>
+            </ul>
+        </nav>
+        
+        <div class="user-profile-wrapper">
+            <span class="welcome-message" id="welcomeUserMessage"></span>
+            
+            <div class="user-profile-dropdown" id="profileDropdown">
+                <i class="fas fa-user-circle profile-icon"></i>
+                <div class="dropdown-content">
+                    <a href="esqueceu_senha.html"><i class="fas fa-key"></i> Redefinir Senha</a>
+                    <a href="#" class="logout-item" id="logoutDropdownBtn"><i class="fas fa-sign-out-alt"></i> Sair</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="main-content container">
+        <h2>Atendimento Médico</h2>
+
+        <div class="patient-info-card">
+            <div class="patient-details">
+                <h3><i class="fas fa-user-injured"></i> Paciente: <span id="patientNameDisplay">Maria Clara Souza</span></h3>
+                <p><strong>Data Nasc.:</strong> <span id="patientDobDisplay">20/03/1990</span></p>
+                <p><strong>CPF:</strong> <span id="patientCpfDisplay">123.456.789-00</span></p>
+                <p><strong>Convênio:</strong> <span id="patientInsuranceDisplay">Saúde Bem Viver</span></p>
+                <p><strong>Último Atendimento:</strong> <span id="lastAttendanceDisplay">10/05/2024 (Cardiologista)</span></p>
+            </div>
+            <div class="patient-actions">
+                <div class="doctor-info">
+                    <p><strong>Dr(a).:</strong> <span id="doctorName">Carlos Silva</span></p>
+                    <p><strong>CRM:</strong> <span id="doctorCrm">SP123456</span></p>
+                    <p><strong>Especialidade:</strong> <span id="doctorSpecialty">Cardiologia</span></p>
+                </div>
+                <button class="action-button call-patient" id="callPatientBtn">
+                    <i class="fas fa-tv"></i> Chamar Paciente
+                </button>
+                <div id="callingMessage" style="display: none;">
+                    <i class="fas fa-bell"></i> Paciente <span id="patientNameCalling"></span> sendo chamado(a)!
+                </div>
+                <button class="action-button" id="viewHistoryBtn">
+                    <i class="fas fa-notes-medical"></i> Ver Histórico
+                </button>
+            </div>
+        </div>
+
+        <div class="attendance-form">
+            <form id="medicalAttendanceForm">
+                <div class="form-section">
+                    <h3>Dados da Triagem</h3>
+                    <div class="form-group">
+                        <label for="pressure">Pressão Arterial:</label>
+                        <input type="text" id="pressure" name="pressure" placeholder="Ex: 120/80 mmHg" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="temperature">Temperatura:</label>
+                        <input type="text" id="temperature" name="temperature" placeholder="Ex: 36.5 °C" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="heartRate">Frequência Cardíaca:</label>
+                        <input type="text" id="heartRate" name="heartRate" placeholder="Ex: 75 bpm" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="respiratoryRate">Frequência Respiratória:</label>
+                        <input type="text" id="respiratoryRate" name="respiratoryRate" placeholder="Ex: 16 ipm" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="weight">Peso (kg):</label>
+                        <input type="number" id="weight" name="weight" step="0.1" placeholder="Ex: 70.5" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="height">Altura (cm):</label>
+                        <input type="number" id="height" name="height" placeholder="Ex: 175" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="triageNotes">Observações da Triagem:</label>
+                        <textarea id="triageNotes" name="triageNotes" rows="4" placeholder="Anote aqui quaisquer observações relevantes da triagem (dor, estado geral, etc.)"></textarea>
+                    </div>
+                </div>
+
+                <hr>
+
+                <div class="form-section">
+                    <h3>Anamnese e Consulta</h3>
+                    <div class="form-group">
+                        <label for="anamnesis">Queixa Principal / Anamnese:</label>
+                        <textarea id="anamnesis" name="anamnesis" rows="8" placeholder="Descreva a queixa principal, histórico da doença atual, histórico médico pregresso, cirurgias, medicamentos em uso, alergias, histórico familiar, etc." required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="physicalExam">Exame Físico:</label>
+                        <textarea id="physicalExam" name="physicalExam" rows="6" placeholder="Descreva os achados do exame físico por sistemas (geral, pele e mucosas, cabeça e pescoço, tórax, abdome, membros, neurológico, etc.)"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="diagnosis">Diagnóstico (CID-10, se aplicável):</label>
+                        <input type="text" id="diagnosis" name="diagnosis" placeholder="Ex: C00-D48 (Neoplasias), I10 (Hipertensão essencial)">
+                    </div>
+                    <div class="form-group">
+                        <label for="treatmentPlan">Plano Terapêutico / Conduta:</label>
+                        <textarea id="treatmentPlan" name="treatmentPlan" rows="6" placeholder="Descreva o plano de tratamento, condutas, orientações ao paciente, etc." required></textarea>
+                    </div>
+                </div>
+
+                <hr>
+
+                <div class="form-section">
+                    <h3>Ações Pós-Atendimento</h3>
+                    <div class="form-group">
+                        <label for="prescription">Receita Médica:</label>
+                        <textarea id="prescription" name="prescription" rows="5" placeholder="Insira aqui os detalhes da receita (medicamento, dosagem, via, frequência, duração)."></textarea>
+                        <button type="button" class="action-button mt-2" id="generatePrescriptionBtn">
+                            <i class="fas fa-prescription-bottle-alt"></i> Gerar Receita
+                        </button>
+                    </div>
+                    <div class="form-group">
+                        <label for="exams">Solicitação de Exames:</label>
+                        <textarea id="exams" name="exams" rows="5" placeholder="Liste os exames a serem solicitados (Ex: Hemograma completo, Glicemia em jejum, Radiografia de tórax)."></textarea>
+                        <button type="button" class="action-button mt-2" id="generateExamRequestBtn">
+                            <i class="fas fa-microscope"></i> Solicitar Exames
+                        </button>
+                    </div>
+                    <div class="form-group">
+                        <label for="referral">Encaminhamento:</label>
+                        <textarea id="referral" name="referral" rows="5" placeholder="Detalhes do encaminhamento (especialidade, motivo, médico/instituição de destino)."></textarea>
+                        <button type="button" class="action-button mt-2" id="generateReferralBtn">
+                            <i class="fas fa-share-square"></i> Gerar Encaminhamento
+                        </button>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn primary"><i class="fas fa-save"></i> Salvar Atendimento</button>
+                    <a href="#" onclick="cancelAndGoBack(); return false;" class="btn danger">
+                        <i class="fas fa-times-circle"></i> Cancelar
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <footer class="main-footer">
+        <div class="container">
+            <p>&copy; 2025 Sistema de Gestão Hospitalar. Todos os direitos reservados.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Lógica para o menu de usuário (mantida igual)
+            const welcomeMessageElement = document.getElementById('welcomeUserMessage');
+            const loggedInUserName = sessionStorage.getItem('loggedInUserName');
+
+            if (welcomeMessageElement && loggedInUserName) {
+                welcomeMessageElement.textContent = `Olá, ${loggedInUserName}`;
+            } else if (welcomeMessageElement) {
+                welcomeMessageElement.textContent = 'Olá, Usuário';
+            }
+
+            const profileDropdown = document.getElementById('profileDropdown');
+            if (profileDropdown) { 
+                profileDropdown.addEventListener('click', function(event) {
+                    event.stopPropagation();
+                    this.classList.toggle('show');
+                });
+            }
+
+            document.addEventListener('click', function(event) {
+                if (profileDropdown && !profileDropdown.contains(event.target)) {
+                    profileDropdown.classList.remove('show');
+                }
+            });
+
+            const logoutDropdownBtn = document.getElementById('logoutDropdownBtn');
+            if (logoutDropdownBtn) {
+                logoutDropdownBtn.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    const confirmLogout = confirm("Tem certeza que deseja sair?");
+                    if (confirmLogout) {
+                        sessionStorage.removeItem('loggedInUserName');
+                        alert("Sessão encerrada com sucesso!");
+                        window.location.href = 'login.html';
+                    }
+                });
+            }
+
+            // --- Lógica da Tela de Atendimento Médico ---
+
+            // Botão "Chamar Paciente"
+            const callPatientBtn = document.getElementById('callPatientBtn');
+            const callingMessage = document.getElementById('callingMessage');
+            const patientNameCalling = document.getElementById('patientNameCalling');
+            const patientNameDisplay = document.getElementById('patientNameDisplay').textContent; // Pega o nome do paciente exibido
+
+            if (callPatientBtn) {
+                callPatientBtn.addEventListener('click', function() {
+                    patientNameCalling.textContent = patientNameDisplay; // Define o nome do paciente na mensagem
+                    callingMessage.style.display = 'block'; // Mostra a mensagem
+                    // Você pode adicionar um timer aqui para a mensagem sumir após alguns segundos
+                    setTimeout(() => {
+                        callingMessage.style.display = 'none';
+                    }, 5000); // Esconde a mensagem após 5 segundos
+                    alert(`Paciente ${patientNameDisplay} está sendo chamado(a) para atendimento!`); // Alerta simples
+                    // Em um sistema real, aqui você dispararia uma requisição para um backend
+                    // que atualizaria um painel de chamadas na recepção.
+                });
+            }
+
+            // Botão "Ver Histórico"
+            const viewHistoryBtn = document.getElementById('viewHistoryBtn');
+            if (viewHistoryBtn) {
+                viewHistoryBtn.addEventListener('click', function() {
+                    // Redireciona para a tela de histórico (assumindo que já existe)
+                    window.location.href = 'historico_agendamentos.html'; 
+                });
+            }
+
+            // Botões de "Gerar Receita", "Solicitar Exames", "Gerar Encaminhamento"
+            const generatePrescriptionBtn = document.getElementById('generatePrescriptionBtn');
+            const generateExamRequestBtn = document.getElementById('generateExamRequestBtn');
+            const generateReferralBtn = document.getElementById('generateReferralBtn');
+
+            if (generatePrescriptionBtn) {
+                generatePrescriptionBtn.addEventListener('click', function() {
+                    const prescriptionText = document.getElementById('prescription').value.trim();
+                    if (prescriptionText) {
+                        alert("Receita Médica Gerada:\n\n" + prescriptionText + "\n\n(Em um sistema real, isso geraria um PDF ou documento para impressão/assinatura eletrônica)");
+                        // Lógica para gerar PDF da receita ou enviar para impressão
+                    } else {
+                        alert("Por favor, preencha o campo de Receita Médica antes de gerar.");
+                    }
+                });
+            }
+
+            if (generateExamRequestBtn) {
+                generateExamRequestBtn.addEventListener('click', function() {
+                    const examsText = document.getElementById('exams').value.trim();
+                    if (examsText) {
+                        alert("Solicitação de Exames Gerada:\n\n" + examsText + "\n\n(Em um sistema real, isso geraria um PDF ou solicitação para o laboratório)");
+                        // Lógica para gerar PDF de solicitação de exames
+                    } else {
+                        alert("Por favor, preencha o campo de Solicitação de Exames antes de gerar.");
+                    }
+                });
+            }
+
+            if (generateReferralBtn) {
+                generateReferralBtn.addEventListener('click', function() {
+                    const referralText = document.getElementById('referral').value.trim();
+                    if (referralText) {
+                        alert("Encaminhamento Gerado:\n\n" + referralText + "\n\n(Em um sistema real, isso geraria um PDF ou documento para o paciente/especialista)");
+                        // Lógica para gerar PDF de encaminhamento
+                    } else {
+                        alert("Por favor, preencha o campo de Encaminhamento antes de gerar.");
+                    }
+                });
+            }
+
+            // Botão "Salvar Atendimento"
+            const medicalAttendanceForm = document.getElementById('medicalAttendanceForm');
+            if (medicalAttendanceForm) {
+                medicalAttendanceForm.addEventListener('submit', function(event) {
+                    event.preventDefault(); // Impede o envio do formulário padrão
+
+                    // Aqui você coletaria todos os dados do formulário
+                    const formData = {
+                        patientName: patientNameDisplay,
+                        dob: document.getElementById('patientDobDisplay').textContent,
+                        cpf: document.getElementById('patientCpfDisplay').textContent,
+                        insurance: document.getElementById('patientInsuranceDisplay').textContent,
+                        
+                        doctorName: document.getElementById('doctorName').textContent, // Captura o nome do médico
+                        doctorCrm: document.getElementById('doctorCrm').textContent,     // Captura o CRM
+                        doctorSpecialty: document.getElementById('doctorSpecialty').textContent, // Captura a especialidade
+                        
+                        pressure: document.getElementById('pressure').value,
+                        temperature: document.getElementById('temperature').value,
+                        heartRate: document.getElementById('heartRate').value,
+                        respiratoryRate: document.getElementById('respiratoryRate').value,
+                        weight: document.getElementById('weight').value,
+                        height: document.getElementById('height').value,
+                        triageNotes: document.getElementById('triageNotes').value,
+
+                        anamnesis: document.getElementById('anamnesis').value,
+                        physicalExam: document.getElementById('physicalExam').value,
+                        diagnosis: document.getElementById('diagnosis').value,
+                        treatmentPlan: document.getElementById('treatmentPlan').value,
+                        
+                        prescription: document.getElementById('prescription').value,
+                        exams: document.getElementById('exams').value,
+                        referral: document.getElementById('referral').value
+                    };
+
+                    console.log("Dados do Atendimento Salvos (simulado):", formData);
+                    alert("Atendimento salvo com sucesso! (Verifique o console para os dados)");
+                    // Em um sistema real, você enviaria formData para o backend
+                    // fetch('/api/save-attendance', {
+                    //      method: 'POST',
+                    //      headers: { 'Content-Type': 'application/json' },
+                    //      body: JSON.stringify(formData)
+                    // })
+                    // .then(response => response.json())
+                    // .then(data => {
+                    //      alert('Atendimento salvo com sucesso!');
+                    //      // Opcional: Redirecionar ou limpar o formulário
+                    // })
+                    // .catch(error => {
+                    //      console.error('Erro ao salvar atendimento:', error);
+                    //      alert('Erro ao salvar atendimento. Tente novamente.');
+                    // });
+                });
+            }
+        });
+
+        // Função global para o botão Cancelar
+        function cancelAndGoBack() {
+            const confirmCancel = confirm("Tem certeza que deseja cancelar o atendimento e retornar à página anterior?");
+            if (confirmCancel) {
+                document.getElementById('medicalAttendanceForm').reset(); // Limpa o formulário
+                alert("Atendimento cancelado e formulário limpo. Retornando à página anterior...");
+                window.history.back(); // Volta para a página anterior
+            }
+        }
+    </script>
+</body>
+</html>

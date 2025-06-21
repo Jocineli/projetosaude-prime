@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Triagem do Paciente - Saúde Prime</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* --- Estilos do HEADER (mantidos iguais) --- */
+        .main-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: #05447f;
+            color: white;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            position: relative;
+            flex-wrap: wrap;
+        }
+
+        .logo {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logo img {
+            height: 40px;
+            width: auto;
+            vertical-align: middle;
+        }
+
+        .main-nav {
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+        }
+
+        .main-nav ul {
+            display: flex;
+            align-items: center;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .main-nav ul li {
+            margin: 0 15px;
+        }
+
+        .main-nav ul li a {
+            color: white;
+            text-decoration: none;
+            padding: 10px 0;
+            transition: color 0.3s ease;
+        }
+
+        .main-nav ul li a:hover {
+            color: #d0e0ff;
+        }
+
+        .user-profile-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .welcome-message {
+            color: white;
+            font-size: 1em;
+            font-weight: normal;
+            white-space: nowrap;
+        }
+
+        .user-profile-dropdown {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+            z-index: 1000;
+        }
+
+        .user-profile-dropdown .profile-icon {
+            font-size: 2.2em;
+            color: white;
+            transition: color 0.2s ease;
+        }
+
+        .user-profile-dropdown:hover .profile-icon,
+        .user-profile-dropdown.active .profile-icon {
+            color: #d0e0ff;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: white;
+            min-width: 180px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+            right: 0;
+            top: calc(100% + 10px);
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        
+        .user-profile-dropdown.show .dropdown-content {
+            display: block;
+        }
+
+        .dropdown-content a {
+            color: #333;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            text-align: left;
+            font-weight: normal;
+            font-size: 0.95em;
+            transition: background-color 0.2s ease, color 0.2s ease;
+        }
+
+        .dropdown-content a:hover {
+            background-color: #f1f1f1;
+            color: #05447f;
+        }
+        
+        .dropdown-content a i {
+            margin-right: 8px;
+            color: #05447f;
+        }
+
+        .main-nav #logoutBtn {
+            display: none !important; 
+        }
+
+        @media (max-width: 768px) {
+            .main-header {
+                justify-content: center;
+                padding-bottom: 20px; 
+            }
+            .logo {
+                width: 100%;
+                text-align: center;
+                padding-bottom: 10px;
+                order: 1;
+            }
+            .main-nav {
+                width: 100%;
+                order: 2;
+                justify-content: center;
+                margin-top: 10px;
+            }
+            .main-nav ul {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            .main-nav ul li {
+                margin: 5px 10px;
+            }
+            .user-profile-dropdown .dropdown-content {
+                right: auto;
+                left: 50%;
+                transform: translateX(-50%);
+            }
+        }
+        /* --- FIM dos Estilos do HEADER --- */
+
+        /* Estilos específicos para a página de Triagem */
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            background-color: #f0f2f5;
+            font-family: Arial, sans-serif;
+            margin: 0;
+        }
+
+        .main-content {
+            flex-grow: 1;
+            padding: 20px;
+            max-width: 800px; /* Largura máxima para o formulário de triagem */
+            margin: 30px auto; /* Centraliza e adiciona margem */
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .triagem-card {
+            padding: 20px;
+        }
+
+        .triagem-card h2 {
+            color: #0056b3;
+            margin-top: 0;
+            margin-bottom: 25px;
+            font-size: 2em;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .patient-info-summary {
+            background-color: #e9f5ff;
+            border: 1px solid #cce0ff;
+            border-left: 5px solid #007bff;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 30px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 10px;
+            font-size: 0.95em;
+        }
+
+        .patient-info-summary p {
+            margin: 0;
+            flex: 1 1 calc(50% - 10px); /* Ocupa metade da largura em telas maiores */
+            color: #333;
+            font-weight: 500;
+        }
+
+        .patient-info-summary p strong {
+            color: #0056b3;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .form-group input[type="text"],
+        .form-group input[type="number"],
+        .form-group textarea {
+            width: calc(100% - 22px); /* Considerando padding e border */
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1em;
+            box-sizing: border-box; /* Garante que padding não aumente a largura */
+        }
+
+        .form-group textarea {
+            resize: vertical; /* Permite redimensionar verticalmente */
+            min-height: 100px;
+        }
+
+        .vital-signs-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .button-group {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 30px;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.1em;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+            transform: translateY(-2px);
+        }
+        
+        /* Responsividade para formulário */
+        @media (max-width: 768px) {
+            .main-content {
+                margin: 20px 10px;
+                padding: 15px;
+            }
+            .triagem-card h2 {
+                font-size: 1.5em;
+                margin-bottom: 20px;
+            }
+            .patient-info-summary p {
+                flex: 1 1 100%; /* Ocupa 100% da largura em telas menores */
+            }
+            .vital-signs-group {
+                grid-template-columns: 1fr; /* Uma coluna em telas menores */
+            }
+            .button-group {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .btn {
+                width: 100%;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="main-header">
+        <a href="menu_principal.html" class="logo">
+            Saúde Prime
+        </a>
+        
+        <nav class="main-nav">
+            <ul>
+                <li><a href="pacientes.html">Pacientes</a></li>
+                <li><a href="agendamento.html">Agendamentos</a></li>
+                <li><a href="menu_principal.html">☰</a></li>
+            </ul>
+        </nav>
+        
+        <div class="user-profile-wrapper">
+            <span class="welcome-message" id="welcomeUserMessage"></span>
+            
+            <div class="user-profile-dropdown" id="profileDropdown">
+                <i class="fas fa-user-circle profile-icon"></i>
+                <div class="dropdown-content">
+                    <a href="esqueceu_senha.html"><i class="fas fa-key"></i> Redefinir Senha</a>
+                    <a href="#" class="logout-item" id="logoutDropdownBtn"><i class="fas fa-sign-out-alt"></i> Sair</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="main-content container">
+        <div class="triagem-card">
+            <h2><i class="fas fa-stethoscope"></i> Triagem do Paciente</h2>
+
+            <div class="patient-info-summary">
+                <p>Nome: <strong id="patientName"></strong></p>
+                <p>CPF: <strong id="patientCpf"></strong></p>
+                <p>Nascimento: <strong id="patientDob"></strong></p>
+                <p>Idade: <strong id="patientAge"></strong></p>
+                <p>Especialidade: <strong id="patientSpecialty"></strong></p>
+                <p>Convênio: <strong id="patientInsurance"></strong></p>
+            </div>
+
+            <form id="triagemForm">
+                <div class="vital-signs-group">
+                    <div class="form-group">
+                        <label for="pressaoArterial">Pressão Arterial (mmHg):</label>
+                        <input type="text" id="pressaoArterial" name="pressaoArterial" placeholder="Ex: 120/80" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="temperatura">Temperatura (°C):</label>
+                        <input type="number" id="temperatura" name="temperatura" step="0.1" placeholder="Ex: 36.5" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="altura">Altura (cm):</label>
+                        <input type="number" id="altura" name="altura" step="1" placeholder="Ex: 175" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="peso">Peso (kg):</label>
+                        <input type="number" id="peso" name="peso" step="0.1" placeholder="Ex: 70.2" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="frequenciaCardiaca">Frequência Cardíaca (bpm):</label>
+                        <input type="number" id="frequenciaCardiaca" name="frequenciaCardiaca" placeholder="Ex: 72">
+                    </div>
+                    <div class="form-group">
+                        <label for="frequenciaRespiratoria">Frequência Respiratória (rpm):</label>
+                        <input type="number" id="frequenciaRespiratoria" name="frequenciaRespiratoria" placeholder="Ex: 16">
+                    </div>
+                    <div class="form-group">
+                        <label for="saturacaoO2">Saturação de O2 (%):</label>
+                        <input type="number" id="saturacaoO2" name="saturacaoO2" step="1" placeholder="Ex: 98">
+                    </div>
+                    <div class="form-group">
+                        <label for="dor">Nível de Dor (0-10):</label>
+                        <input type="number" id="dor" name="dor" min="0" max="10" placeholder="Ex: 5">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="observacoes">Anotações e Observações:</label>
+                    <textarea id="observacoes" name="observacoes" placeholder="Outros sintomas, histórico relevante, etc."></textarea>
+                </div>
+
+                <div class="button-group">
+                    <button type="button" class="btn btn-secondary" onclick="window.history.back()"><i class="fas fa-arrow-left"></i> Voltar</button>
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Salvar Triagem</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <footer class="main-footer">
+        <div class="container">
+            <p>&copy; 2025 Sistema de Gestão Hospitalar. Todos os direitos reservados.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Lógica para o menu de usuário (mantida igual)
+            const welcomeMessageElement = document.getElementById('welcomeUserMessage');
+            const loggedInUserName = sessionStorage.getItem('loggedInUserName');
+
+            if (welcomeMessageElement && loggedInUserName) {
+                welcomeMessageElement.textContent = `Olá, ${loggedInUserName}`;
+            } else if (welcomeMessageElement) {
+                welcomeMessageElement.textContent = 'Olá, Usuário';
+            }
+
+            const profileDropdown = document.getElementById('profileDropdown');
+            if (profileDropdown) { 
+                profileDropdown.addEventListener('click', function(event) {
+                    event.stopPropagation();
+                    this.classList.toggle('show');
+                });
+            }
+
+            document.addEventListener('click', function(event) {
+                if (profileDropdown && !profileDropdown.contains(event.target)) {
+                    profileDropdown.classList.remove('show');
+                }
+            });
+
+            const logoutDropdownBtn = document.getElementById('logoutDropdownBtn');
+            if (logoutDropdownBtn) {
+                logoutDropdownBtn.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    const confirmLogout = confirm("Tem certeza que deseja sair?");
+                    if (confirmLogout) {
+                        sessionStorage.removeItem('loggedInUserName');
+                        alert("Sessão encerrada com sucesso!");
+                        window.location.href = 'login.html';
+                    }
+                });
+            }
+
+            // --- Lógica da Tela de Triagem ---
+            const patientNameElem = document.getElementById('patientName');
+            const patientCpfElem = document.getElementById('patientCpf');
+            const patientDobElem = document.getElementById('patientDob');
+            const patientAgeElem = document.getElementById('patientAge');
+            const patientSpecialtyElem = document.getElementById('patientSpecialty');
+            const patientInsuranceElem = document.getElementById('patientInsurance');
+            const triagemForm = document.getElementById('triagemForm');
+
+            // Simulação de dados de pacientes (deve ser o mesmo mock da recepcao_triagem.html)
+            const patientsData = [
+                { id: 1, date: '20/06/2025', time: '14:00', name: 'João da Silva', age: 35, specialty: 'Clínica Geral', triagemStatus: 'Aguardando Triagem', dob: '1990-01-01', cpf: '123.456.789-00', insurance: 'Unimed' },
+                { id: 2, date: '20/06/2025', time: '14:15', name: 'Ana Paula Santos', age: 28, specialty: 'Pediatria', triagemStatus: 'Aguardando Triagem', dob: '1997-05-15', cpf: '987.654.321-11', insurance: 'Bradesco Saúde' },
+                { id: 3, date: '20/06/2025', time: '14:30', name: 'Carlos Eduardo Lima', age: 52, specialty: 'Cardiologia', triagemStatus: 'Triado', dob: '1973-11-22', cpf: '111.222.333-44', insurance: 'SUS' },
+                { id: 4, date: '20/06/2025', time: '14:45', name: 'Sofia Mendes Rocha', age: 5, specialty: 'Pediatria', triagemStatus: 'Aguardando Triagem', dob: '2020-08-01', cpf: '555.666.777-88', insurance: 'Saúde Kids' },
+                { id: 5, date: '20/06/2025', time: '13:00', name: 'Mariana Oliveira', age: 40, specialty: 'Ginecologia', triagemStatus: 'Faltou', dob: '1985-03-20', cpf: '999.888.777-66', insurance: 'Amil' },
+                { id: 6, date: '20/06/2025', time: '13:30', name: 'Rafael Costa', age: 60, specialty: 'Oftalmologia', triagemStatus: 'Triado', dob: '1965-07-10', cpf: '112.334.556-77', insurance: 'Golden Cross' }
+            ];
+
+            // Pega o ID do paciente da URL (simulando a passagem de parâmetros)
+            const urlParams = new URLSearchParams(window.location.search);
+            const patientId = parseInt(urlParams.get('patientId'));
+
+            // Encontra o paciente pelos dados simulados
+            const patient = patientsData.find(p => p.id === patientId);
+
+            if (patient) {
+                patientNameElem.textContent = patient.name;
+                patientCpfElem.textContent = patient.cpf;
+                patientDobElem.textContent = patient.dob;
+                patientAgeElem.textContent = patient.age;
+                patientSpecialtyElem.textContent = patient.specialty;
+                patientInsuranceElem.textContent = patient.insurance;
+            } else {
+                // Caso o paciente não seja encontrado (redireciona ou exibe erro)
+                alert('Paciente não encontrado para triagem.');
+                window.location.href = 'recepcao_triagem.html'; // Volta para a lista
+            }
+
+            // Lógica para salvar a triagem
+            triagemForm.addEventListener('submit', function(event) {
+                event.preventDefault(); // Impede o envio padrão do formulário
+
+                // Coleta os dados do formulário
+                const triagemData = {
+                    patientId: patient.id,
+                    pressaoArterial: document.getElementById('pressaoArterial').value,
+                    temperatura: document.getElementById('temperatura').value,
+                    altura: document.getElementById('altura').value,
+                    peso: document.getElementById('peso').value,
+                    frequenciaCardiaca: document.getElementById('frequenciaCardiaca').value,
+                    frequenciaRespiratoria: document.getElementById('frequenciaRespiratoria').value,
+                    saturacaoO2: document.getElementById('saturacaoO2').value,
+                    dor: document.getElementById('dor').value,
+                    observacoes: document.getElementById('observacoes').value,
+                    triagemDateTime: new Date().toLocaleString() // Adiciona data/hora da triagem
+                };
+
+                console.log('Dados da Triagem:', triagemData);
+                alert(`Triagem do paciente ${patient.name} salva com sucesso!`);
+
+                // Aqui você enviaria os dados para um backend (API) real
+                // fetch('/api/triagens', {
+                //     method: 'POST',
+                //     headers: {
+                //         'Content-Type': 'application/json'
+                //     },
+                //     body: JSON.stringify(triagemData)
+                // })
+                // .then(response => response.json())
+                // .then(data => {
+                //     console.log('Triagem salva:', data);
+                //     alert('Triagem salva com sucesso!');
+                //     window.location.href = 'recepcao_triagem.html'; // Volta para a página de recepção
+                // })
+                // .catch(error => {
+                //     console.error('Erro ao salvar triagem:', error);
+                //     alert('Erro ao salvar triagem. Tente novamente.');
+                // });
+
+                // Por enquanto, apenas redireciona de volta após a simulação de salvamento
+                window.location.href = 'recepcao_triagem.html'; 
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configurações - Saúde Prime</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f7f6;
+            color: #333;
+        }
+
+        /* --- Estilos do MENU de Navegação (Header) --- */
+        .main-header {
+            background-color: #05447f; /* Azul escuro principal */
+            color: white;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            flex-wrap: wrap;
+        }
+
+        .main-header .logo {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: white;
+            text-decoration: none;
+            padding: 5px 0;
+        }
+
+        .main-nav ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .main-nav ul li {
+            margin: 0 15px;
+        }
+
+        .main-nav ul li a {
+            color: white;
+            text-decoration: none;
+            padding: 10px 0;
+            transition: color 0.3s ease;
+            display: block;
+        }
+
+        .main-nav ul li a:hover,
+        .main-nav ul li a.active {
+            color: #d0e0ff;
+        }
+
+        @media (max-width: 768px) {
+            .main-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .main-header .logo {
+                width: 100%;
+                text-align: center;
+                margin-bottom: 10px;
+            }
+            .main-nav {
+                width: 100%;
+            }
+            .main-nav ul {
+                flex-direction: column;
+                align-items: center;
+                width: 100%;
+            }
+            .main-nav ul li {
+                margin: 5px 0;
+                width: 100%;
+                text-align: center;
+            }
+            .main-nav ul li a {
+                padding: 8px 0;
+            }
+        }
+        /* Fim Estilos do MENU */
+
+        .settings-container {
+            max-width: 900px;
+            margin: 30px auto;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            padding: 30px;
+        }
+
+        .settings-container h1 {
+            text-align: center;
+            color: #05447f;
+            margin-bottom: 30px;
+            font-size: 2.2em;
+        }
+
+        .settings-section {
+            margin-bottom: 40px;
+            padding: 20px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            background-color: #fcfcfc;
+        }
+
+        .settings-section h2 {
+            color: #007bff;
+            margin-top: 0;
+            margin-bottom: 20px;
+            font-size: 1.6em;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        .form-group select,
+        .form-group input[type="text"],
+        .form-group input[type="number"] {
+            width: calc(100% - 20px); /* Ajuste para padding */
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1em;
+            box-sizing: border-box; /* Inclui padding e borda no width */
+        }
+
+        .form-group input[type="checkbox"] {
+            margin-right: 10px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .profile-permissions {
+            margin-top: 25px;
+            padding-top: 15px;
+            border-top: 1px dashed #ddd;
+        }
+
+        .profile-permissions h3 {
+            color: #05447f;
+            font-size: 1.3em;
+            margin-bottom: 15px;
+        }
+
+        .profile-permissions ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .profile-permissions ul li {
+            margin-bottom: 8px;
+            padding: 5px 0;
+            font-size: 0.95em;
+            display: flex;
+            align-items: center;
+        }
+
+        .profile-permissions ul li .permission-text {
+            margin-left: 5px;
+            flex-grow: 1;
+        }
+
+        .btn-save {
+            display: block;
+            width: 200px;
+            padding: 12px 20px;
+            background-color: #28a745; /* Verde para salvar */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 30px auto 0;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-save:hover {
+            background-color: #218838;
+        }
+
+        /* Responsividade para o container de configurações */
+        @media (max-width: 768px) {
+            .settings-container {
+                margin: 15px auto;
+                padding: 20px;
+            }
+            .settings-section {
+                padding: 15px;
+            }
+            .form-group select,
+            .form-group input[type="text"],
+            .form-group input[type="number"] {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="main-header">
+        <a href="#" class="logo">Saúde Prime</a>
+        <nav class="main-nav">
+            <ul>
+            <li><a href="menu_principal.html">☰</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="settings-container">
+        <h1><i class="fas fa-cogs"></i> Configurações do Sistema</h1>
+
+        <div class="settings-section">
+            <h2><i class="fas fa-desktop"></i> Ajustes Gerais de Exibição</h2>
+            <div class="form-group">
+                <label for="screen-resolution">Resolução de Tela Padrão:</label>
+                <select id="screen-resolution">
+                    <option value="auto">Automático (Recomendado)</option>
+                    <option value="1920x1080">1920x1080 (Full HD)</option>
+                    <option value="1366x768">1366x768</option>
+                    <option value="1280x720">1280x720 (HD)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="font-size">Tamanho da Fonte Padrão:</label>
+                <select id="font-size">
+                    <option value="medium">Médio (Padrão)</option>
+                    <option value="small">Pequeno</option>
+                    <option value="large">Grande</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="settings-section">
+            <h2><i class="fas fa-bullhorn"></i> Configurações do Painel de Chamada</h2>
+            <div class="form-group">
+                <label for="call-panel-refresh">Atualização Automática (segundos):</label>
+                <input type="number" id="call-panel-refresh" value="30" min="5" step="5">
+                <small>Define o intervalo de atualização do painel de chamadas.</small>
+            </div>
+            <div class="form-group">
+                <label for="call-panel-visibility">Itens por página:</label>
+                <input type="number" id="call-panel-visibility" value="10" min="5" max="20">
+                <small>Número máximo de chamadas visíveis por vez no painel.</small>
+            </div>
+        </div>
+
+        <div class="settings-section">
+            <h2><i class="fas fa-building"></i> Gestão de Setores</h2>
+            <div class="form-group">
+                <label>Liberar/Desabilitar Setores para Atendimento:</label>
+                <div class="checkbox-group">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="sector-reception" checked>
+                        <label for="sector-reception">Recepção</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="sector-triage" checked>
+                        <label for="sector-triage">Triagem</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="sector-consultory-1" checked>
+                        <label for="sector-consultory-1">Consultório 1</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="sector-consultory-2">
+                        <label for="sector-consultory-2">Consultório 2</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="sector-labs">
+                        <label for="sector-labs">Laboratório</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="sector-radiology">
+                        <label for="sector-radiology">Radiologia</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="settings-section">
+            <h2><i class="fas fa-users-cog"></i> Gerenciar Permissões de Usuários</h2>
+            <p>Selecione os módulos e funcionalidades que cada perfil de usuário pode acessar.</p>
+
+            <div class="profile-permissions">
+                <h3><i class="fas fa-user"></i> Paciente</h3>
+                <div class="checkbox-group">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="perm-paciente-cadastro" checked>
+                        <label for="perm-paciente-cadastro">Cadastro de Dados Pessoais</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="perm-paciente-agendamento" checked>
+                        <label for="perm-paciente-agendamento">Agendamento (Próprias Consultas)</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="perm-paciente-historico">
+                        <label for="perm-paciente-historico">Histórico de Consultas/Exames (Visualização)</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="perm-paciente-financeiro">
+                        <label for="perm-paciente-financeiro">Financeiro (Visualização de Pagamentos)</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="perm-paciente-recepcao">
+                        <label for="perm-paciente-recepcao">Recepção (Visualização de Status)</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="perm-paciente-triagem">
+                        <label for="perm-paciente-triagem">Triagem</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="perm-paciente-atendimento">
+                        <label for="perm-paciente-atendimento">Atendimento Clínico</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="perm-paciente-dashboard">
+                        <label for="perm-paciente-dashboard">Dashboard</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="perm-paciente-profissional">
+                        <label for="perm-paciente-profissional">Profissionais</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="perm-paciente-teleconsulta-gestao">
+                        <label for="perm-paciente-teleconsulta-gestao">Gestão de Teleconsulta</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="perm-paciente-configuracoes">
+                        <label for="perm-paciente-configuracoes">Configurações</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="profile-permissions">
+                <h3><i class="fas fa-user-friends"></i> Recepção</h3>
+                <div class="checkbox-group">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="perm-recepcao-paciente" checked>
+                        <label for="perm-recepcao-paciente">Paciente (Cadastro e Busca)</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="perm-recepcao-agenda" checked>
+                        <label for="perm-recepcao-agenda">Agenda (Visualização e Agendamento)</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="perm-recepcao-recepcao" checked>
+                        <label for="perm-recepcao-recepcao">Recepção (Check-in, Check-out, Chamada de Painel)</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="perm-recepcao-triagem">
+                        <label for="perm-recepcao-triagem">Triagem</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="perm-recepcao-atendimento">
+                        <label for="perm-recepcao-atendimento">Atendimento Clínico</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="perm-recepcao-financeiro">
+                        <label for="perm-recepcao-financeiro">Financeiro</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="perm-recepcao-configuracoes">
+                        <label for="perm-recepcao-configuracoes">Configurações</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="perm-recepcao-teleconsulta-gestao">
+                        <label for="perm-recepcao-teleconsulta-gestao">Teleconsulta (Gestão)</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="perm-recepcao-dashboard">
+                        <label for="perm-recepcao-dashboard">Dashboard</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="perm-recepcao-profissional">
+                        <label for="perm-recepcao-profissional">Profissionais</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="profile-permissions">
+                <h3><i class="fas fa-user-nurse"></i> Técnicos de Enfermagem e Enfermeiros</h3>
+                <div class="checkbox-group">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="perm-enfermagem-paciente" checked>
+                        <label for="perm-enfermagem-paciente">Paciente (Cadastro e Busca)</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="perm-enfermagem-agenda" checked>
+                        <label for="perm-enfermagem-agenda">Agenda (Visualização e Agendamento)</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="perm-enfermagem-recepcao" checked>
+                        <label for="perm-enfermagem-recepcao">Recepção (Check-in, Check-out, Chamada de Painel)</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="perm-enfermagem-triagem" checked>
+                        <label for="perm-enfermagem-triagem">Triagem (Realização de Triagens)</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="perm-enfermagem-atendimento">
+                        <label for="perm-enfermagem-atendimento">Atendimento Clínico</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="perm-enfermagem-financeiro">
+                        <label for="perm-enfermagem-financeiro">Financeiro</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="perm-enfermagem-configuracoes">
+                        <label for="perm-enfermagem-configuracoes">Configurações</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="perm-enfermagem-teleconsulta-gestao">
+                        <label for="perm-enfermagem-teleconsulta-gestao">Teleconsulta (Gestão)</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="perm-enfermagem-dashboard">
+                        <label for="perm-enfermagem-dashboard">Dashboard</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="perm-enfermagem-profissional">
+                        <label for="perm-enfermagem-profissional">Profissionais</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="profile-permissions">
+                <h3><i class="fas fa-user-md"></i> Médicos</h3>
+                <div class="checkbox-group">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="perm-medico-paciente" checked>
+                        <label for="perm-medico-paciente">Paciente (Visualização de Prontuários e Histórico)</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="perm-medico-agenda" checked>
+                        <label for="perm-medico-agenda">Agenda (Visualização de Consultas)</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="perm-medico-recepcao" checked>
+                        <label for="perm-medico-recepcao">Recepção (Visualização de Status)</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="perm-medico-triagem" checked>
+                        <label for="perm-medico-triagem">Triagem (Visualização de Dados da Triagem)</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="perm-medico-atendimento" checked>
+                        <label for="perm-medico-atendimento">Atendimento (Registro de Consultas, Prescrições, Atestados)</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="perm-medico-financeiro">
+                        <label for="perm-medico-financeiro">Financeiro</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="perm-medico-configuracoes">
+                        <label for="perm-medico-configuracoes">Configurações</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="perm-medico-teleconsulta-gestao">
+                        <label for="perm-medico-teleconsulta-gestao">Teleconsulta (Gestão)</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="perm-medico-dashboard">
+                        <label for="perm-medico-dashboard">Dashboard</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="perm-medico-profissional">
+                        <label for="perm-medico-profissional">Profissionais</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="profile-permissions">
+                <h3><i class="fas fa-user-shield"></i> Administrador</h3>
+                <div class="checkbox-group">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="perm-admin-agendamento" checked>
+                        <label for="perm-admin-agendamento">Agendamento (Completo)</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="perm-admin-dashboard" checked>
+                        <label for="perm-admin-dashboard">Dashboard (Completo)</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="perm-admin-profissional" checked>
+                        <label for="perm-admin-profissional">Profissional (Cadastro e Gestão)</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="perm-admin-paciente" checked>
+                        <label for="perm-admin-paciente">Paciente (Completo)</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="perm-admin-recepcao" checked>
+                        <label for="perm-admin-recepcao">Recepção (Completo)</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="perm-admin-triagem" checked>
+                        <label for="perm-admin-triagem">Triagem (Completo)</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="perm-admin-configuracoes" checked>
+                        <label for="perm-admin-configuracoes">Configurações (Acesso total)</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="perm-admin-financeiro" checked>
+                        <label for="perm-admin-financeiro">Financeiro (Completo)</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="perm-admin-teleconsulta" checked>
+                        <label for="perm-admin-teleconsulta">Teleconsulta (Gestão de Plataforma)</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <button class="btn-save"><i class="fas fa-save"></i> Salvar Configurações</button>
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Valores iniciais das permissões para cada perfil.
+            // Em um sistema real, esses dados viriam de um banco de dados.
+            const initialPermissions = {
+                paciente: {
+                    cadastro: true, agendamento: true, historico: false, financeiro: false, recepcao: false,
+                    triagem: false, atendimento: false, dashboard: false, profissional: false, 'teleconsulta-gestao': false, configuracoes: false
+                },
+                recepcao: {
+                    paciente: true, agenda: true, recepcao: true,
+                    triagem: false, atendimento: false, financeiro: false, configuracoes: false, 'teleconsulta-gestao': false, dashboard: false, profissional: false
+                },
+                enfermagem: {
+                    paciente: true, agenda: true, recepcao: true, triagem: true,
+                    atendimento: false, financeiro: false, configuracoes: false, 'teleconsulta-gestao': false, dashboard: false, profissional: false
+                },
+                medico: {
+                    paciente: true, agenda: true, recepcao: true, triagem: true, atendimento: true,
+                    financeiro: false, configuracoes: false, 'teleconsulta-gestao': false, dashboard: false, profissional: false
+                },
+                administrador: {
+                    agendamento: true, dashboard: true, profissional: true, paciente: true,
+                    recepcao: true, triagem: true, configuracoes: true, financeiro: true, teleconsulta: true
+                }
+            };
+
+            // Mapeamento de todos os módulos/funcionalidades para cada perfil, para garantir que todos sejam capturados.
+            // Isso evita ter que listar cada checkbox ID individualmente no loop de coleta.
+            const allPossiblePermissions = {
+                paciente: ['cadastro', 'agendamento', 'historico', 'financeiro', 'recepcao', 'triagem', 'atendimento', 'dashboard', 'profissional', 'teleconsulta-gestao', 'configuracoes'],
+                recepcao: ['paciente', 'agenda', 'recepcao', 'triagem', 'atendimento', 'financeiro', 'configuracoes', 'teleconsulta-gestao', 'dashboard', 'profissional'],
+                enfermagem: ['paciente', 'agenda', 'recepcao', 'triagem', 'atendimento', 'financeiro', 'configuracoes', 'teleconsulta-gestao', 'dashboard', 'profissional'],
+                medico: ['paciente', 'agenda', 'recepcao', 'triagem', 'atendimento', 'financeiro', 'configuracoes', 'teleconsulta-gestao', 'dashboard', 'profissional'],
+                administrador: ['agendamento', 'dashboard', 'profissional', 'paciente', 'recepcao', 'triagem', 'configuracoes', 'financeiro', 'teleconsulta'] // 'teleconsulta' no admin é a gestão
+            };
+
+
+            // Função para carregar as permissões nos checkboxes
+            function loadPermissions() {
+                for (const profileKey in initialPermissions) {
+                    if (initialPermissions.hasOwnProperty(profileKey)) {
+                        for (const permissionKey in initialPermissions[profileKey]) {
+                            if (initialPermissions[profileKey].hasOwnProperty(permissionKey)) {
+                                const checkboxId = `perm-${profileKey}-${permissionKey}`;
+                                const checkbox = document.getElementById(checkboxId);
+                                if (checkbox) {
+                                    checkbox.checked = initialPermissions[profileKey][permissionKey];
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Carregar as permissões ao carregar a página
+            loadPermissions();
+
+            // Lidar com o botão de salvar
+            const saveButton = document.querySelector('.btn-save');
+            saveButton.addEventListener('click', function() {
+                // Coletar outras configurações (tela, painel, setores)
+                const screenResolution = document.getElementById('screen-resolution').value;
+                const fontSize = document.getElementById('font-size').value;
+                const callPanelRefresh = document.getElementById('call-panel-refresh').value;
+                const callPanelVisibility = document.getElementById('call-panel-visibility').value;
+
+                const sectors = {
+                    reception: document.getElementById('sector-reception').checked,
+                    triage: document.getElementById('sector-triage').checked,
+                    consultory1: document.getElementById('sector-consultory-1').checked,
+                    consultory2: document.getElementById('sector-consultory-2').checked,
+                    labs: document.getElementById('sector-labs').checked,
+                    radiology: document.getElementById('sector-radiology').checked
+                };
+
+                // Coletar o estado atual dos checkboxes de permissão
+                const currentPermissions = {};
+                for (const profileKey in allPossiblePermissions) {
+                    if (allPossiblePermissions.hasOwnProperty(profileKey)) {
+                        currentPermissions[profileKey] = {};
+                        for (const permissionKey of allPossiblePermissions[profileKey]) {
+                            const checkboxId = `perm-${profileKey}-${permissionKey}`;
+                            const checkbox = document.getElementById(checkboxId);
+                            if (checkbox) {
+                                currentPermissions[profileKey][permissionKey] = checkbox.checked;
+                            } else {
+                                // Se o checkbox não existe (permissão não aplicável a esse perfil),
+                                // podemos definir como false ou simplesmente não adicionar.
+                                // Optei por não adicionar para evitar chaves desnecessárias se não houver checkbox.
+                                console.warn(`Checkbox ${checkboxId} não encontrado para o perfil ${profileKey}.`);
+                            }
+                        }
+                    }
+                }
+
+
+                console.log('Configurações Salvas:', {
+                    screenResolution,
+                    fontSize,
+                    callPanelRefresh,
+                    callPanelVisibility,
+                    sectors,
+                    permissions: currentPermissions
+                });
+
+                alert('Configurações salvas com sucesso! (Esta é uma simulação)');
+
+                // Em um sistema real, você enviaria `currentPermissions` e outras configurações para o backend:
+                // fetch('/api/save-settings', {
+                //     method: 'POST',
+                //     headers: { 'Content-Type': 'application/json' },
+                //     body: JSON.stringify({
+                //         screenResolution, fontSize, callPanelRefresh, callPanelVisibility,
+                //         sectors, permissions: currentPermissions
+                //     })
+                // }).then(response => response.json())
+                //   .then(data => alert('Configurações salvas com sucesso!'))
+                //   .catch(error => console.error('Erro ao salvar:', error));
+            });
+        });
+    </script>
+</body>
+</html>

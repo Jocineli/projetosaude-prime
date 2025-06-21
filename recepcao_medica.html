@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recepção Médica - Saúde Prime</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background-color: #f0f2f5;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .header {
+            background-color: #05447f;
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 1.8em;
+        }
+
+        .header .back-button {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.2em;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: color 0.2s ease;
+        }
+
+        .header .back-button:hover {
+            color: #d0e0ff;
+        }
+
+        .main-content {
+            flex-grow: 1;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .dashboard-container {
+            background-color: #ffffff;
+            padding: 15px; /* Reduzido */
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 1000px;
+            margin-bottom: 20px; /* Reduzido */
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* Min-width reduzido */
+            gap: 15px; /* Reduzido */
+        }
+
+        .dashboard-card {
+            background-color: #e0f2f7; /* Light blue */
+            padding: 10px; /* Reduzido */
+            border-radius: 8px;
+            text-align: center;
+            color: #05447f;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s ease;
+        }
+
+        .dashboard-card.confirmed { background-color: #d4edda; color: #28a745; } /* Green for confirmed */
+        .dashboard-card.missed { background-color: #f8d7da; color: #dc3545; } /* Red for missed */
+        .dashboard-card.triaged { background-color: #fff3cd; color: #ffc107; } /* Yellow for triaged */
+
+        .dashboard-card h3 {
+            margin: 0 0 5px 0; /* Reduzido */
+            font-size: 0.9em; /* Reduzido */
+            font-weight: bold;
+        }
+
+        .dashboard-card .count {
+            font-size: 1.8em; /* Reduzido */
+            font-weight: bold;
+        }
+
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 1000px; /* Wider container for patient list */
+        }
+
+        h2 {
+            color: #05447f;
+            text-align: center;
+            margin-bottom: 25px;
+            font-size: 1.8em;
+        }
+
+        .search-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .search-bar input[type="text"] {
+            flex-grow: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1em;
+        }
+
+        .search-bar button {
+            background-color: #05447f;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.2s ease;
+        }
+
+        .search-bar button:hover {
+            background-color: #043a6b;
+        }
+
+        .patient-list-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .patient-list-table th,
+        .patient-list-table td {
+            border: 1px solid #e0e0e0;
+            padding: 12px 15px;
+            text-align: left;
+        }
+
+        .patient-list-table th {
+            background-color: #f2f2f2;
+            color: #05447f;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 0.9em;
+        }
+
+        .patient-list-table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .patient-list-table tr:hover {
+            background-color: #e6f7ff; /* Light blue on hover */
+        }
+
+        .patient-list-table .attend-button {
+            background-color: #28a745;
+            color: white;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: background-color 0.2s ease;
+        }
+
+        .patient-list-table .attend-button:hover {
+            background-color: #218838;
+        }
+
+        .patient-list-table .status-badge {
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .status-badge.agendado { background-color: #cfe2ff; color: #004085; } /* Blueish */
+        .status-badge.confirmado { background-color: #d4edda; color: #155724; } /* Green */
+        .status-badge.faltou { background-color: #f8d7da; color: #721c24; } /* Red */
+        .status-badge.triado { background-color: #fff3cd; color: #856404; } /* Yellow */
+        .status-badge.atendido { background-color: #d1ecf1; color: #0c5460; } /* Cyan */
+
+        .footer {
+            background-color: #05447f;
+            color: white;
+            text-align: center;
+            padding: 15px;
+            font-size: 0.8em;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 15px;
+            }
+            .dashboard-container {
+                grid-template-columns: 1fr;
+            }
+            .container {
+                padding: 20px;
+            }
+            .patient-list-table, .patient-list-table thead, .patient-list-table tbody, .patient-list-table th, .patient-list-table td, .patient-list-table tr { 
+                display: block;
+            }
+            .patient-list-table thead tr { 
+                position: absolute;
+                top: -9999px;
+                left: -9999px;
+            }
+            .patient-list-table tr { border: 1px solid #ddd; margin-bottom: 15px; }
+            .patient-list-table td { 
+                border: none;
+                border-bottom: 1px solid #eee; 
+                position: relative;
+                padding-left: 50%;
+                text-align: right;
+            }
+            .patient-list-table td:before { 
+                position: absolute;
+                top: 6px;
+                left: 6px;
+                width: 45%; 
+                padding-right: 10px; 
+                white-space: nowrap;
+                content: attr(data-label);
+                font-weight: bold;
+                text-align: left;
+                color: #05447f;
+            }
+            .patient-list-table td:last-child { border-bottom: 0; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <button class="back-button" onclick="window.location.href='menu_principal.html'">
+            <i class="fas fa-arrow-left"></i> Voltar
+        </button>
+        <h1>Recepção Médica</h1>
+        <div></div> 
+    </div>
+
+    <div class="main-content">
+        <div class="dashboard-container">
+            <div class="dashboard-card">
+                <h3>Agendados Hoje</h3>
+                <div class="count" id="countAgendados">0</div>
+            </div>
+            <div class="dashboard-card confirmed">
+                <h3>Confirmados</h3>
+                <div class="count" id="countConfirmados">0</div>
+            </div>
+            <div class="dashboard-card triaged">
+                <h3>Triados</h3>
+                <div class="count" id="countTriados">0</div>
+            </div>
+            <div class="dashboard-card missed">
+                <h3>Faltaram</h3>
+                <div class="count" id="countFaltaram">0</div>
+            </div>
+            <div class="dashboard-card">
+                <h3>Atendidos</h3>
+                <div class="count" id="countAtendidos">0</div>
+            </div>
+        </div>
+
+        <div class="container">
+            <h2>Lista de Pacientes Aguardando</h2>
+            <div class="search-bar">
+                <input type="text" id="search-patient" placeholder="Pesquisar paciente ou especialidade">
+                <button id="search-button"><i class="fas fa-search"></i> Buscar</button>
+            </div>
+            <table class="patient-list-table" id="patientListTable">
+                <thead>
+                    <tr>
+                        <th>Nome do Paciente</th>
+                        <th>Nasc.</th>
+                        <th>Idade</th>
+                        <th>Especialidade</th>
+                        <th>Status</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr data-status="agendado">
+                        <td data-label="Nome do Paciente">Ana Paula Costa</td>
+                        <td data-label="Nasc.">1990-05-15</td>
+                        <td data-label="Idade">34</td>
+                        <td data-label="Especialidade">Cardiologia</td>
+                        <td data-label="Status"><span class="status-badge agendado">Agendado</span></td>
+                        <td data-label="Ações"><button class="attend-button" data-patient-id="1">Atender</button></td>
+                    </tr>
+                    <tr data-status="confirmado">
+                        <td data-label="Nome do Paciente">Carlos Eduardo Silva</td>
+                        <td data-label="Nasc.">1988-11-22</td>
+                        <td data-label="Idade">36</td>
+                        <td data-label="Especialidade">Dermatologia</td>
+                        <td data-label="Status"><span class="status-badge confirmado">Confirmado</span></td>
+                        <td data-label="Ações"><button class="attend-button" data-patient-id="2">Atender</button></td>
+                    </tr>
+                     <tr data-status="triado">
+                        <td data-label="Nome do Paciente">Beatriz Fernandes</td>
+                        <td data-label="Nasc.">1975-01-30</td>
+                        <td data-label="Idade">49</td>
+                        <td data-label="Especialidade">Clínica Geral</td>
+                        <td data-label="Status"><span class="status-badge triado">Triado</span></td>
+                        <td data-label="Ações"><button class="attend-button" data-patient-id="3">Atender</button></td>
+                    </tr>
+                    <tr data-status="agendado">
+                        <td data-label="Nome do Paciente">Fernanda Lima</td>
+                        <td data-label="Nasc.">2000-03-01</td>
+                        <td data-label="Idade">24</td>
+                        <td data-label="Especialidade">Oftalmologia</td>
+                        <td data-label="Status"><span class="status-badge agendado">Agendado</span></td>
+                        <td data-label="Ações"><button class="attend-button" data-patient-id="4">Atender</button></td>
+                    </tr>
+                     <tr data-status="faltou">
+                        <td data-label="Nome do Paciente">João Pedro Santos</td>
+                        <td data-label="Nasc.">1965-08-01</td>
+                        <td data-label="Idade">59</td>
+                        <td data-label="Especialidade">Ortopedia</td>
+                        <td data-label="Status"><span class="status-badge faltou">Faltou</span></td>
+                        <td data-label="Ações"><button class="attend-button" data-patient-id="5">Atender</button></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>Tecnologia a serviço da saúde - versão 2.025.06</p>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            function calculateAge(dob) {
+                const birthDate = new Date(dob);
+                const today = new Date();
+                let age = today.getFullYear() - birthDate.getFullYear();
+                const m = today.getMonth() - birthDate.getMonth();
+                if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+                    age--;
+                }
+                return age;
+            }
+
+            let patients = [
+                { id: 1, name: 'Ana Paula Costa', dob: '1990-05-15', specialty: 'Cardiologia', status: 'agendado' },
+                { id: 2, name: 'Carlos Eduardo Silva', dob: '1988-11-22', specialty: 'Dermatologia', status: 'confirmado' },
+                { id: 3, name: 'Beatriz Fernandes', dob: '1975-01-30', specialty: 'Clínica Geral', status: 'triado' },
+                { id: 4, name: 'Fernanda Lima', dob: '2000-03-01', specialty: 'Oftalmologia', status: 'agendado' },
+                { id: 5, name: 'João Pedro Santos', dob: '1965-08-01', specialty: 'Ortopedia', status: 'faltou' },
+                { id: 6, name: 'Mariana Oliveira', dob: '1992-07-20', specialty: 'Pediatria', status: 'confirmado' },
+                { id: 7, name: 'Ricardo Almeida', dob: '1980-04-10', specialty: 'Gastroenterologia', status: 'agendado' },
+                { id: 8, name: 'Sofia Pereira', dob: '2005-09-05', specialty: 'Nutrição', status: 'triado' },
+                { id: 9, name: 'Pedro Henrique Martins', dob: '1970-12-12', specialty: 'Urologia', status: 'atendido' }
+            ];
+
+            const patientListTableBody = document.getElementById('patientListTable').getElementsByTagName('tbody')[0];
+            const countAgendados = document.getElementById('countAgendados');
+            const countConfirmados = document.getElementById('countConfirmados');
+            const countTriados = document.getElementById('countTriados');
+            const countFaltaram = document.getElementById('countFaltaram');
+            const countAtendidos = document.getElementById('countAtendidos');
+            const searchInput = document.getElementById('search-patient');
+            const searchButton = document.getElementById('search-button');
+
+            function renderPatientList(filteredPatients = patients) {
+                patientListTableBody.innerHTML = ''; 
+                filteredPatients.forEach(patient => {
+                    const row = patientListTableBody.insertRow();
+                    row.setAttribute('data-status', patient.status); 
+
+                    const age = calculateAge(patient.dob);
+                    const statusClass = patient.status.toLowerCase();
+
+                    row.innerHTML = `
+                        <td data-label="Nome do Paciente">${patient.name}</td>
+                        <td data-label="Nasc.">${patient.dob}</td>
+                        <td data-label="Idade">${age}</td>
+                        <td data-label="Especialidade">${patient.specialty}</td>
+                        <td data-label="Status"><span class="status-badge ${statusClass}">${patient.status.charAt(0).toUpperCase() + patient.status.slice(1)}</span></td>
+                        <td data-label="Ações"><button class="attend-button" data-patient-id="${patient.id}">Atender</button></td>
+                    `;
+                });
+            }
+
+            function updateDashboardCounts() {
+                const agendadosCount = patients.filter(p => p.status === 'agendado').length;
+                const confirmadosCount = patients.filter(p => p.status === 'confirmado').length;
+                const triadosCount = patients.filter(p => p.status === 'triado').length;
+                const faltaramCount = patients.filter(p => p.status === 'faltou').length;
+                const atendidosCount = patients.filter(p => p.status === 'atendido').length;
+
+                countAgendados.textContent = agendadosCount;
+                countConfirmados.textContent = confirmadosCount;
+                countTriados.textContent = triadosCount;
+                countFaltaram.textContent = faltaramCount;
+                countAtendidos.textContent = atendidosCount;
+            }
+
+            renderPatientList();
+            updateDashboardCounts();
+
+            // Handle "Attend" button click
+            patientListTableBody.addEventListener('click', function(event) {
+                if (event.target.classList.contains('attend-button')) {
+                    const patientId = event.target.dataset.patientId;
+                    const patient = patients.find(p => p.id == patientId);
+                    if (patient) {
+                        // Redireciona para a tela de atendimento_medico.html passando o ID do paciente
+                        window.location.href = `atendimento_medico.html?patientId=${patient.id}`;
+                    }
+                }
+            });
+
+            searchButton.addEventListener('click', function() {
+                const searchTerm = searchInput.value.toLowerCase();
+                const filtered = patients.filter(patient =>
+                    patient.name.toLowerCase().includes(searchTerm) ||
+                    patient.specialty.toLowerCase().includes(searchTerm)
+                );
+                renderPatientList(filtered);
+            });
+
+            searchInput.addEventListener('keyup', function(event) {
+                if (event.key === 'Enter') {
+                    searchButton.click();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

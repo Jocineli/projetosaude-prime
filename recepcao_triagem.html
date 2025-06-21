@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recepção - Triagem - Saúde Prime</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* --- Estilos do HEADER (mantidos iguais) --- */
+        .main-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: #05447f;
+            color: white;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            position: relative;
+            flex-wrap: wrap;
+        }
+
+        .logo {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logo img {
+            height: 40px;
+            width: auto;
+            vertical-align: middle;
+        }
+
+        .main-nav {
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+        }
+
+        .main-nav ul {
+            display: flex;
+            align-items: center;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .main-nav ul li {
+            margin: 0 15px;
+        }
+
+        .main-nav ul li a {
+            color: white;
+            text-decoration: none;
+            padding: 10px 0;
+            transition: color 0.3s ease;
+        }
+
+        .main-nav ul li a:hover {
+            color: #d0e0ff;
+        }
+
+        .user-profile-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .welcome-message {
+            color: white;
+            font-size: 1em;
+            font-weight: normal;
+            white-space: nowrap;
+        }
+
+        .user-profile-dropdown {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+            z-index: 1000;
+        }
+
+        .user-profile-dropdown .profile-icon {
+            font-size: 2.2em;
+            color: white;
+            transition: color 0.2s ease;
+        }
+
+        .user-profile-dropdown:hover .profile-icon,
+        .user-profile-dropdown.active .profile-icon {
+            color: #d0e0ff;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: white;
+            min-width: 180px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+            right: 0;
+            top: calc(100% + 10px);
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        
+        .user-profile-dropdown.show .dropdown-content {
+            display: block;
+        }
+
+        .dropdown-content a {
+            color: #333;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            text-align: left;
+            font-weight: normal;
+            font-size: 0.95em;
+            transition: background-color 0.2s ease, color 0.2s ease;
+        }
+
+        .dropdown-content a:hover {
+            background-color: #f1f1f1;
+            color: #05447f;
+        }
+        
+        .dropdown-content a i {
+            margin-right: 8px;
+            color: #05447f;
+        }
+
+        .main-nav #logoutBtn {
+            display: none !important; 
+        }
+
+        @media (max-width: 768px) {
+            .main-header {
+                justify-content: center;
+                padding-bottom: 20px; 
+            }
+            .logo {
+                width: 100%;
+                text-align: center;
+                padding-bottom: 10px;
+                order: 1;
+            }
+            .main-nav {
+                width: 100%;
+                order: 2;
+                justify-content: center;
+                margin-top: 10px;
+            }
+            .main-nav ul {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            .main-nav ul li {
+                margin: 5px 10px;
+            }
+            .user-profile-dropdown .dropdown-content {
+                right: auto;
+                left: 50%;
+                transform: translateX(-50%);
+            }
+        }
+        /* --- FIM dos Estilos do HEADER --- */
+
+        /* Estilos específicos para a página de Triagem */
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            background-color: #f0f2f5;
+            font-family: Arial, sans-serif;
+            margin: 0;
+        }
+
+        .main-content {
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            flex-grow: 1;
+            max-width: 900px; /* Reduzido de 1000px para 900px */
+            margin: 20px auto;
+            border-radius: 8px;
+            background-color: #ffffff;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .dashboard-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); /* Reduzido minmax */
+            gap: 10px; /* Reduzido de 15px para 10px */
+            margin-bottom: 15px;
+        }
+
+        .summary-card {
+            background-color: #ffffff;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            border-bottom: 4px solid;
+        }
+
+        /* Cores e labels para os cards de resumo da Triagem */
+        .summary-card.scheduled { border-color: #007bff; } /* Azul para Agendados */
+        .summary-card.awaiting-triagem { border-color: #ffc107; } /* Amarelo para Aguardando Triagem */
+        .summary-card.triaged { border-color: #28a745; } /* Verde para Triados */
+        .summary-card.missed { border-color: #dc3545; } /* Vermelho para Faltaram */
+
+        /* Ajuste do tamanho dos ícones do dashboard */
+        .summary-card i {
+            font-size: 1.8em; 
+            margin-bottom: 8px; 
+            color: #05447f;
+        }
+
+        .summary-card .count {
+            font-size: 2.2em;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .summary-card .label {
+            font-size: 1.1em;
+            color: #555;
+        }
+
+        .reception-card {
+            background-color: #ffffff;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .reception-card h2 {
+            color: #0056b3;
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-size: 1.8em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .patient-list {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .patient-list th, .patient-list td {
+            border: 1px solid #ddd;
+            padding: 10px 12px;
+            text-align: left;
+        }
+
+        .patient-list th {
+            background-color: #f2f2f2;
+            color: #333;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 0.9em;
+        }
+
+        .patient-list tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .patient-list tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        /* Novas classes de status para a tabela de Triagem */
+        .status-agendado {
+            color: #007bff;
+            font-weight: bold;
+        }
+
+        .status-confirmado {
+            color: #28a745;
+            font-weight: bold;
+        }
+        
+        .status-triado {
+            color: #007bff;
+            font-weight: bold;
+        }
+
+        .status-faltou {
+            color: #dc3545;
+            font-weight: bold;
+        }
+        
+        .action-button {
+            padding: 7px 12px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.85em;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: background-color 0.3s ease;
+            text-decoration: none;
+        }
+
+        .action-button:hover {
+            background-color: #0056b3;
+        }
+        
+        /* Botão para Triar */
+        .action-button.triage {
+            background-color: #ffc107; 
+            color: #333; 
+        }
+        .action-button.triage:hover {
+            background-color: #e0a800;
+        }
+
+        /* Botão de Marcar Falta (se mantiver) */
+        .action-button.absent {
+            background-color: #6c757d; 
+        }
+        .action-button.absent:hover {
+            background-color: #5a6268;
+        }
+
+        /* Responsividade da tabela */
+        @media (max-width: 600px) {
+            .patient-list, .patient-list tbody, .patient-list tr, .patient-list td, .patient-list th {
+                display: block;
+            }
+
+            .patient-list thead {
+                display: none;
+            }
+
+            .patient-list tr {
+                margin-bottom: 10px;
+                border: 1px solid #ddd;
+                border-radius: 8px;
+                box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            }
+
+            .patient-list td {
+                text-align: right;
+                padding-left: 50%;
+                position: relative;
+            }
+
+            .patient-list td::before {
+                content: attr(data-label);
+                position: absolute;
+                left: 10px;
+                width: calc(50% - 20px);
+                padding-right: 10px;
+                white-space: nowrap;
+                text-align: left;
+                font-weight: bold;
+                color: #555;
+            }
+
+            .patient-list td:last-child {
+                text-align: center;
+                padding-top: 10px;
+                padding-bottom: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="main-header">
+        <a href="menu_principal.html" class="logo">
+            Saúde Prime
+        </a>
+        
+        <nav class="main-nav">
+            <ul>
+                <li><a href="pacientes.html">Pacientes</a></li>
+                <li><a href="agendamento.html">Agendamentos</a></li>
+                <li><a href="menu_principal.html">☰</a></li>
+            </ul>
+        </nav>
+        
+        <div class="user-profile-wrapper">
+            <span class="welcome-message" id="welcomeUserMessage"></span>
+            
+            <div class="user-profile-dropdown" id="profileDropdown">
+                <i class="fas fa-user-circle profile-icon"></i>
+                <div class="dropdown-content">
+                    <a href="esqueceu_senha.html"><i class="fas fa-key"></i> Redefinir Senha</a>
+                    <a href="#" class="logout-item" id="logoutDropdownBtn"><i class="fas fa-sign-out-alt"></i> Sair</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="main-content container">
+        <div class="dashboard-summary">
+            <div class="summary-card scheduled">
+                <i class="fas fa-calendar-alt"></i>
+                <div class="count" id="scheduledCount">0</div>
+                <div class="label">Agendados Hoje</div>
+            </div>
+            <div class="summary-card awaiting-triagem">
+                <i class="fas fa-hourglass-half"></i>
+                <div class="count" id="awaitingTriagemCount">0</div>
+                <div class="label">Aguardando Triagem</div>
+            </div>
+            <div class="summary-card triaged">
+                <i class="fas fa-user-check"></i>
+                <div class="count" id="triagedCount">0</div>
+                <div class="label">Triados Hoje</div>
+            </div>
+            <div class="summary-card missed">
+                <i class="fas fa-times-circle"></i>
+                <div class="count" id="missedCount">0</div>
+                <div class="label">Faltaram</div>
+            </div>
+        </div>
+
+        <div class="reception-card">
+            <h2><i class="fas fa-notes-medical"></i> Gerenciar Triagens do Dia</h2>
+            
+            <table class="patient-list">
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Hora</th>
+                        <th>Nome do Paciente</th>
+                        <th>Especialidade</th>
+                        <th>Status Triagem</th>
+                        <th>Ação</th>
+                    </tr>
+                </thead>
+                <tbody id="patientTableBody">
+                    </tbody>
+            </table>
+        </div>
+    </div>
+
+    <footer class="main-footer">
+        <div class="container">
+            <p>&copy; 2025 Sistema de Gestão Hospitalar. Todos os direitos reservados.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Lógica para o menu de usuário (mantida igual)
+            const welcomeMessageElement = document.getElementById('welcomeUserMessage');
+            const loggedInUserName = sessionStorage.getItem('loggedInUserName');
+
+            if (welcomeMessageElement && loggedInUserName) {
+                welcomeMessageElement.textContent = `Olá, ${loggedInUserName}`;
+            } else if (welcomeMessageElement) {
+                welcomeMessageElement.textContent = 'Olá, Usuário';
+            }
+
+            const profileDropdown = document.getElementById('profileDropdown');
+            if (profileDropdown) { 
+                profileDropdown.addEventListener('click', function(event) {
+                    event.stopPropagation();
+                    this.classList.toggle('show');
+                });
+            }
+
+            document.addEventListener('click', function(event) {
+                if (profileDropdown && !profileDropdown.contains(event.target)) {
+                    profileDropdown.classList.remove('show');
+                }
+            });
+
+            const logoutDropdownBtn = document.getElementById('logoutDropdownBtn');
+            if (logoutDropdownBtn) {
+                logoutDropdownBtn.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    const confirmLogout = confirm("Tem certeza que deseja sair?");
+                    if (confirmLogout) {
+                        sessionStorage.removeItem('loggedInUserName');
+                        alert("Sessão encerrada com sucesso!");
+                        window.location.href = 'login.html';
+                    }
+                });
+            }
+
+            // --- Lógica da Tela de Recepção de Triagem e Dashboard ---
+
+            // Dados de pacientes (simulados) com novos status de triagem
+            let patientsData = [
+                { id: 1, date: '20/06/2025', time: '14:00', name: 'João da Silva', age: 35, specialty: 'Clínica Geral', triagemStatus: 'Aguardando Triagem', dob: '1990-01-01', cpf: '123.456.789-00', insurance: 'Unimed' },
+                { id: 2, date: '20/06/2025', time: '14:15', name: 'Ana Paula Santos', age: 28, specialty: 'Pediatria', triagemStatus: 'Aguardando Triagem', dob: '1997-05-15', cpf: '987.654.321-11', insurance: 'Bradesco Saúde' },
+                { id: 3, date: '20/06/2025', time: '14:30', name: 'Carlos Eduardo Lima', age: 52, specialty: 'Cardiologia', triagemStatus: 'Triado', dob: '1973-11-22', cpf: '111.222.333-44', insurance: 'SUS' },
+                { id: 4, date: '20/06/2025', time: '14:45', name: 'Sofia Mendes Rocha', age: 5, specialty: 'Pediatria', triagemStatus: 'Aguardando Triagem', dob: '2020-08-01', cpf: '555.666.777-88', insurance: 'Saúde Kids' },
+                { id: 5, date: '20/06/2025', time: '13:00', name: 'Mariana Oliveira', age: 40, specialty: 'Ginecologia', triagemStatus: 'Faltou', dob: '1985-03-20', cpf: '999.888.777-66', insurance: 'Amil' },
+                { id: 6, date: '20/06/2025', time: '13:30', name: 'Rafael Costa', age: 60, specialty: 'Oftalmologia', triagemStatus: 'Triado', dob: '1965-07-10', cpf: '112.334.556-77', insurance: 'Golden Cross' }
+            ];
+
+            // Função para renderizar a tabela de pacientes e atualizar os cards de resumo
+            function renderPatientListAndSummary() {
+                const patientTableBody = document.getElementById('patientTableBody');
+                patientTableBody.innerHTML = ''; // Limpa a lista existente
+
+                let scheduledCount = patientsData.length; // Assumindo todos que estão na lista são agendados
+                let awaitingTriagemCount = 0;
+                let triagedCount = 0;
+                let missedCount = 0;
+
+                patientsData.forEach(patient => {
+                    // Contagem para os cards de resumo
+                    if (patient.triagemStatus === 'Aguardando Triagem') {
+                        awaitingTriagemCount++;
+                    } else if (patient.triagemStatus === 'Triado') {
+                        triagedCount++;
+                    } else if (patient.triagemStatus === 'Faltou') {
+                        missedCount++;
+                    }
+
+                    // Renderiza apenas os pacientes que estão 'Aguardando Triagem' ou 'Triado' para esta tela
+                    if (patient.triagemStatus === 'Aguardando Triagem' || patient.triagemStatus === 'Triado') {
+                        const row = patientTableBody.insertRow();
+                        const statusClass = `status-${patient.triagemStatus.toLowerCase().replace(/\s/g, '-')}`;
+                        
+                        row.innerHTML = `
+                            <td data-label="Data">${patient.date}</td>
+                            <td data-label="Hora">${patient.time}</td>
+                            <td data-label="Nome do Paciente">${patient.name}</td>
+                            <td data-label="Especialidade">${patient.specialty}</td>
+                            <td data-label="Status Triagem"><span class="${statusClass}">${patient.triagemStatus}</span></td>
+                            <td data-label="Ação">
+                                ${patient.triagemStatus === 'Aguardando Triagem' ? `
+                                <button class="action-button triage-btn triage" data-patient-id="${patient.id}">
+                                    <i class="fas fa-file-medical"></i> Triar
+                                </button>
+                                ` : patient.triagemStatus === 'Triado' ? `
+                                <span style="color: #28a745; font-weight: bold;">Já Triado</span>
+                                ` : ''}
+                            </td>
+                        `;
+                    }
+                });
+
+                // Atualiza os números nos cards do dashboard
+                document.getElementById('scheduledCount').textContent = scheduledCount;
+                document.getElementById('awaitingTriagemCount').textContent = awaitingTriagemCount;
+                document.getElementById('triagedCount').textContent = triagedCount;
+                document.getElementById('missedCount').textContent = missedCount;
+
+                // Re-adiciona event listeners aos novos botões gerados
+                document.querySelectorAll('.triage-btn').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const patientId = parseInt(this.dataset.patientId);
+                        // Redireciona para a tela de triagem, passando o ID do paciente
+                        window.location.href = `tela_triagem.html?patientId=${patientId}`;
+                    });
+                });
+            }
+
+            // Chama a função para renderizar a lista e o resumo ao carregar a página
+            renderPatientListAndSummary();
+        });
+    </script>
+</body>
+</html>
